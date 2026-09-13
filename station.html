@@ -1,0 +1,2278 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>黔货出海 · 都匀毛尖 — 视频制作工作站</title>
+<style>
+/* ==========================================================
+   黔货出海 · 视频工作站
+   暗色 NLE 主题（达芬奇 / Premiere 风）
+   ========================================================== */
+
+:root {
+  /* 调色盘：暗色背景 + 茶绿品牌色 */
+  --bg-0: #0b0f14;       /* 最深底 */
+  --bg-1: #11171f;       /* 面板底 */
+  --bg-2: #181f29;       /* 抬升面 */
+  --bg-3: #232c39;       /* 输入框、激活 */
+  --line: #2b3543;       /* 分隔线 */
+  --line-strong: #384354;
+
+  --ink-1: #e8edf2;      /* 主文本 */
+  --ink-2: #b1bcc8;      /* 次文本 */
+  --ink-3: #7c8a99;      /* 弱化文本 */
+  --ink-4: #54616e;      /* 提示 */
+
+  /* 品牌色：茶绿系 */
+  --tea-1: #1a6b4f;
+  --tea-2: #2aa97b;
+  --tea-3: #7fd4b3;
+  --tea-4: #d9f2e7;
+
+  /* 幕次配色（时间线分段） */
+  --act-card:   #5b6b78;  /* 片头/片尾 */
+  --act-1:      #2aa97b;  /* 第一幕 · 开场 */
+  --act-2:      #2563b8;  /* 第二幕 · Demo 演示 */
+  --act-3:      #d98218;  /* 第三幕 · 结尾 */
+
+  --accent:    #7fd4b3;
+  --warn:      #d98218;
+  --danger:    #d9384a;
+  --info:      #2563b8;
+
+  --r-sm: 6px;
+  --r:    10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+
+  --font: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Consolas", "Cascadia Code", "Menlo", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  height: 100vh;
+  font-family: var(--font);
+  font-size: 12.5px;
+  color: var(--ink-1);
+  background: var(--bg-0);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+a { color: var(--tea-3); text-decoration: none; }
+a:hover { color: var(--tea-4); }
+
+/* ==========================================================
+   顶栏
+   ========================================================== */
+.topbar {
+  height: 56px;
+  flex: 0 0 56px;
+  display: grid;
+  grid-template-columns: 280px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 0 18px;
+  background: linear-gradient(180deg, #131c25 0%, #0e151c 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--tea-1), var(--tea-2));
+  color: #fff;
+  font-weight: 700; font-size: 14px;
+  border-radius: var(--r);
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(42,169,123,.3);
+}
+.brand-name { font-size: 14px; font-weight: 600; letter-spacing: .5px; color: var(--ink-1); }
+.brand-sep { color: var(--ink-3); margin: 0 4px; }
+.brand-sub  { font-size: 10.5px; color: var(--ink-3); margin-top: 2px; letter-spacing: .8px; }
+
+.project-meta { display: flex; flex-direction: column; gap: 4px; }
+.meta-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11.5px;
+  flex-wrap: wrap;
+}
+.meta-k { color: var(--ink-3); min-width: 32px; flex: 0 0 auto; }
+.meta-v { color: var(--ink-1); white-space: nowrap; }
+.meta-sep { color: var(--line-strong); }
+
+.top-actions { display: flex; gap: 8px; }
+
+.btn {
+  height: 32px; padding: 0 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 500;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-2);
+  color: var(--ink-1);
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.btn:hover { background: var(--bg-3); border-color: var(--accent); color: var(--tea-3); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--tea-1), var(--tea-2));
+  border-color: var(--tea-1); color: #fff;
+}
+.btn-primary:hover { background: linear-gradient(135deg, var(--tea-2), var(--tea-2)); color: #fff; }
+
+/* ==========================================================
+   主体 3 列布局
+   ========================================================== */
+.workspace {
+  height: calc(100vh - 56px - 220px);   /* 顶栏 56 + 时间线 220 */
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 1px;
+  background: var(--line);   /* gap as 1px line */
+}
+
+/* —— 共用：面板头 —— */
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 36px; padding: 0 14px;
+  background: linear-gradient(180deg, #161e27 0%, #11171f 100%);
+  border-bottom: 1px solid var(--line);
+}
+.panel-title { font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--ink-2); text-transform: uppercase; }
+.panel-sub { font-size: 11px; color: var(--ink-3); }
+
+/* ==========================================================
+   项目浏览器（左侧）
+   ========================================================== */
+.browser {
+  background: var(--bg-1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.browser-search {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.browser-search input {
+  width: 100%; height: 28px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--ink-1);
+  border-radius: var(--r-sm);
+  padding: 0 10px;
+  font-size: 12px;
+  font-family: var(--font);
+  outline: none;
+}
+.browser-search input:focus { border-color: var(--tea-2); background: var(--bg-3); }
+
+.acts-tree { flex: 1 1 auto; overflow-y: auto; padding: 6px 0 12px; }
+
+.act {
+  margin: 6px 8px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.act-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.act-head:hover { background: var(--bg-3); }
+.act-head .act-name {
+  font-size: 12px; font-weight: 600; color: var(--ink-1);
+  display: flex; align-items: center; gap: 8px;
+}
+.act-head .act-dot { width: 8px; height: 8px; border-radius: 50%; }
+.act-head .act-count { font-size: 11px; color: var(--ink-3); }
+.act-body { padding: 4px 0 6px; }
+
+.shot-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  border-left: 2px solid transparent;
+  user-select: none;
+  transition: background .12s ease;
+}
+.shot-item:hover { background: var(--bg-3); color: var(--ink-1); }
+.shot-item.active {
+  background: linear-gradient(90deg, rgba(127,212,179,.18), rgba(127,212,179,0));
+  color: var(--ink-1);
+  border-left-color: var(--accent);
+}
+.shot-item .shot-id {
+  display: inline-block; min-width: 28px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-3); text-align: center;
+}
+.shot-item .shot-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.shot-item .shot-tc {
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--ink-4);
+}
+
+.browser-foot {
+  border-top: 1px solid var(--line);
+  padding: 8px 12px;
+  font-size: 10.5px;
+  color: var(--ink-3);
+}
+.legend { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.lg { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 3px; vertical-align: middle; }
+.lg-act1 { background: var(--act-1); }
+.lg-act2 { background: var(--act-2); }
+.lg-act3 { background: var(--act-3); }
+.lg-card { background: var(--act-card); }
+
+/* ==========================================================
+   检视器（中央）
+   ========================================================== */
+.viewer {
+  background: var(--bg-0);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.viewer-head {
+  height: 36px;
+  background: linear-gradient(180deg, #161e27 0%, #11171f 100%);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px;
+}
+.tabs { display: flex; gap: 0; }
+.tab {
+  background: transparent;
+  border: none;
+  color: var(--ink-3);
+  font-family: var(--font); font-size: 12px;
+  height: 36px; padding: 0 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.tab:hover { color: var(--ink-1); }
+.tab-active { color: var(--tea-3); border-bottom-color: var(--tea-3); }
+
+.viewer-status {
+  font-size: 11.5px; color: var(--ink-3);
+  display: flex; align-items: center; gap: 6px;
+}
+.dot {
+  display: inline-block; width: 7px; height: 7px;
+  border-radius: 50%;
+}
+.dot-rec { background: var(--danger); box-shadow: 0 0 6px rgba(217,56,74,.6); }
+
+.viewer-stage {
+  flex: 1 1 auto;
+  position: relative;
+  background: #000;
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.viewer-stage video {
+  max-width: 100%; max-height: 100%;
+  width: auto; height: auto;
+  background: #000;
+}
+.viewer-overlay {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: radial-gradient(ellipse at center, rgba(20,30,40,.4), rgba(0,0,0,.85));
+  cursor: pointer;
+  transition: opacity .25s ease;
+}
+.viewer-overlay.hide { opacity: 0; pointer-events: none; }
+.overlay-card {
+  text-align: center;
+  padding: 20px 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: rgba(20,30,40,.55);
+  backdrop-filter: blur(6px);
+}
+.overlay-icon {
+  font-size: 36px; color: var(--tea-3); margin-bottom: 8px;
+}
+.overlay-title { font-size: 14px; color: var(--ink-1); font-weight: 600; }
+.overlay-sub   { font-size: 11px;  color: var(--ink-3); margin-top: 6px; }
+
+.viewer-banner {
+  position: absolute; left: 0; right: 0; top: 0;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, rgba(0,0,0,.7), rgba(0,0,0,0));
+  pointer-events: none;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px; font-weight: 600;
+  border-radius: 3px;
+  background: var(--tea-1);
+  color: #fff;
+}
+.banner-title {
+  flex: 1 1 auto; font-size: 13px; color: var(--ink-1);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.banner-time {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--ink-2);
+  padding: 2px 8px;
+  background: rgba(0,0,0,.5);
+  border-radius: var(--r-sm);
+}
+
+/* —— 播放控制 —— */
+.transport {
+  flex: 0 0 56px;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--line);
+}
+.t-btn {
+  height: 30px; min-width: 30px; padding: 0 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink-1);
+  font-family: var(--font); font-size: 12px;
+  cursor: pointer;
+}
+.t-btn:hover { background: var(--bg-3); border-color: var(--tea-2); color: var(--tea-3); }
+.t-btn-main {
+  background: var(--tea-1);
+  color: #fff;
+  border-color: var(--tea-1);
+  width: 40px;
+  font-size: 13px;
+}
+.t-btn-main:hover { background: var(--tea-2); }
+
+.t-timecode {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--tea-3);
+  background: var(--bg-0);
+  padding: 4px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  margin-left: 8px;
+}
+
+.t-rate { display: flex; gap: 4px; }
+.rate-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-3);
+  font-family: var(--mono); font-size: 11px;
+  height: 24px; padding: 0 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.rate-btn:hover { color: var(--ink-1); }
+.rate-btn.active { background: var(--tea-1); border-color: var(--tea-1); color: #fff; }
+
+.t-vol { display: flex; align-items: center; gap: 6px; color: var(--ink-3); font-size: 12px; }
+.t-vol input { width: 80px; accent-color: var(--tea-2); }
+
+.t-jump { display: flex; align-items: center; gap: 4px; justify-self: end; color: var(--ink-3); font-size: 11.5px; }
+.jump-btn {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-family: var(--font); font-size: 11px;
+  height: 24px; padding: 0 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.jump-btn:hover { background: var(--bg-3); color: var(--tea-3); border-color: var(--tea-2); }
+
+/* ==========================================================
+   元数据面板（右侧）
+   ========================================================== */
+.inspector {
+  background: var(--bg-1);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+
+.ins-section {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.ins-section-title {
+  font-size: 10.5px; font-weight: 600;
+  color: var(--tea-3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.ins-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 0;
+  font-size: 11.5px;
+}
+.ins-row.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 4px 0;
+}
+.ins-k { color: var(--ink-3); }
+.ins-v { color: var(--ink-1); }
+.mono { font-family: var(--mono); }
+
+.page-pill {
+  display: inline-block;
+  padding: 1px 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--tea-3);
+}
+
+.ins-sub {
+  font-size: 11.5px; color: var(--ink-2);
+  background: var(--bg-2);
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  border-left: 2px solid var(--tea-2);
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.ins-vo {
+  font-size: 11.5px;
+  color: var(--ink-1);
+  background: var(--bg-2);
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  line-height: 1.7;
+  border-left: 2px solid var(--accent);
+  max-height: 240px;
+  overflow-y: auto;
+  word-break: break-word;
+}
+
+.ins-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.ins-metric {
+  background: var(--bg-2);
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+}
+.ins-metric .m-v { font-size: 14px; font-weight: 600; color: var(--tea-3); }
+.ins-metric .m-l { font-size: 10.5px; color: var(--ink-3); margin-top: 2px; }
+
+.ins-actions {
+  display: flex; flex-wrap: wrap; gap: 4px;
+}
+.act-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: var(--mono); font-size: 10.5px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-2);
+  border-radius: 3px;
+}
+
+.ins-links {
+  display: flex; flex-direction: column;
+  gap: 4px;
+}
+.il {
+  display: block;
+  padding: 6px 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  transition: all .12s ease;
+}
+.il:hover { background: var(--bg-3); color: var(--tea-3); border-color: var(--tea-2); }
+
+/* ==========================================================
+   时间线（底部）
+   ========================================================== */
+.timeline-bar {
+  height: 220px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--line);
+  display: flex; flex-direction: column;
+}
+.tl-head {
+  height: 28px;
+  display: flex; align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.tl-title {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: var(--tea-3);
+  text-transform: uppercase;
+  min-width: 200px;
+}
+.tl-ruler {
+  flex: 1 1 auto; height: 18px;
+  position: relative;
+  margin-left: 12px;      /* align with .tl-track horizontal padding */
+  border-left: 1px solid var(--line-strong);
+}
+.tl-tick {
+  position: absolute; top: 0;
+  height: 18px;
+  border-left: 1px solid var(--line-strong);
+  font-family: var(--mono); font-size: 9.5px;
+  color: var(--ink-3);
+  padding-left: 4px;
+  line-height: 18px;
+  user-select: none;
+}
+
+.tl-track {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: stretch;
+  padding: 14px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 0;
+  background:
+    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+  position: relative;
+}
+.tl-clip {
+  position: relative;
+  flex: 0 0 auto;
+  height: 100%;
+  min-height: 60px;
+  margin-right: 1px;
+  border-radius: 4px;
+  padding: 5px 7px;
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.tl-clip:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.5); filter: brightness(1.12); }
+.tl-clip.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 4px rgba(127,212,179,.18), 0 4px 14px rgba(0,0,0,.5);
+  z-index: 2;
+}
+.tl-clip .clip-id {
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(255,255,255,.85);
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+.tl-clip .clip-title {
+  font-size: 10.5px;
+  color: rgba(255,255,255,.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.tl-clip .clip-tc {
+  font-family: var(--mono); font-size: 9.5px;
+  color: rgba(255,255,255,.55);
+  display: flex; justify-content: space-between;
+}
+.tl-clip.act-card { background: linear-gradient(180deg, #5b6b78 0%, #3c4753 100%); }
+.tl-clip.act-1    { background: linear-gradient(180deg, #2aa97b 0%, #1f8a64 100%); }
+.tl-clip.act-2    { background: linear-gradient(180deg, #2563b8 0%, #1d4e8c 100%); }
+.tl-clip.act-3    { background: linear-gradient(180deg, #d98218 0%, #a85f0d 100%); }
+
+.tl-foot {
+  height: 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+  font-size: 11px; color: var(--ink-3);
+}
+.tl-cursor {
+  width: 2px;
+  height: 100%;
+  background: var(--accent);
+  position: absolute;
+  left: 0; top: 0;
+  pointer-events: none;
+  display: none;
+  box-shadow: 0 0 8px var(--accent);
+  z-index: 3;
+}
+.tl-cursor::before {
+  content: ''; position: absolute; top: -1px; left: -5px;
+  width: 12px; height: 8px;
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* ==========================================================
+   模态：项目信息
+   ========================================================== */
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  display: grid; place-items: center;
+  z-index: 100;
+}
+.modal[hidden] { display: none; }
+.modal-card {
+  width: 540px; max-width: 90vw;
+  background: var(--bg-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+}
+.modal-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #161e27, #11171f);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px; font-weight: 600; color: var(--ink-1);
+}
+.modal-close {
+  background: transparent; border: none;
+  color: var(--ink-3); font-size: 14px; cursor: pointer;
+}
+.modal-close:hover { color: var(--tea-3); }
+.modal-body { padding: 18px; font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+.modal-body .kv { display: grid; grid-template-columns: 100px 1fr; gap: 6px 12px; margin: 8px 0; }
+.modal-body .k { color: var(--ink-3); }
+.modal-body .v { color: var(--ink-1); }
+.modal-body h4 { color: var(--tea-3); font-size: 12px; margin: 14px 0 6px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* ==========================================================
+   FAB
+   ========================================================== */
+.fab-info {
+  position: fixed; right: 18px; bottom: 232px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--tea-1); color: #fff;
+  border: none; cursor: pointer;
+  font-family: serif; font-style: italic; font-weight: 700; font-size: 16px;
+  box-shadow: 0 4px 12px rgba(26,107,79,.5);
+  z-index: 50;
+}
+.fab-info:hover { background: var(--tea-2); transform: scale(1.05); }
+
+/* ==========================================================
+   滚动条
+   ========================================================== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-1); }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--tea-2); }
+</style>
+</head>
+<body>
+
+<!-- ====================================================== -->
+<!-- 顶栏 · Brand + Project + Quick actions                  -->
+<!-- ====================================================== -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">QH</div>
+    <div class="brand-text">
+      <div class="brand-name">黔货出海 <span class="brand-sep">·</span> 视频工作站</div>
+      <div class="brand-sub">QianHuoChuHai · Non-Linear Editor</div>
+    </div>
+  </div>
+
+  <div class="project-meta">
+    <div class="meta-row">
+      <span class="meta-k">项目</span>
+      <span class="meta-v" data-bind="meta.title">—</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-k">成片</span>
+      <span class="meta-v" data-bind="meta.specs.duration">—</span>
+      <span class="meta-sep">·</span>
+      <span class="meta-v" data-bind="meta.specs.resolution">—</span>
+      <span class="meta-sep">·</span>
+      <span class="meta-v" data-bind="meta.specs.fps">— fps</span>
+      <span class="meta-sep">·</span>
+      <span class="meta-v" data-bind="meta.specs.size">—</span>
+    </div>
+  </div>
+
+  <nav class="top-actions">
+    <a class="btn btn-ghost" id="link-demo"     href="index.html"   target="_blank" rel="noopener">↗ 打开源 Demo</a>
+    <a class="btn btn-ghost" id="link-board"    href="#" target="_blank" rel="noopener">↗ 查看分镜文档</a>
+    <a class="btn btn-primary" id="link-source"  href="#" target="_blank" rel="noopener">↗ 下载成片</a>
+  </nav>
+</header>
+
+<!-- ====================================================== -->
+<!-- 主体 · 4 列：浏览器 / 检视器 / 元数据                  -->
+<!-- ====================================================== -->
+<main class="workspace">
+
+  <!-- ────────── 左侧：项目浏览器 ────────── -->
+  <aside class="browser" id="browser">
+    <div class="panel-head">
+      <span class="panel-title">项目浏览器</span>
+      <span class="panel-sub" data-bind="meta.stats.shots">— 段</span>
+    </div>
+    <div class="browser-search">
+      <input type="text" id="search" placeholder="搜索镜头 / 标题…" />
+    </div>
+    <div class="acts-tree" id="acts-tree"><!-- JS 注入 --></div>
+    <div class="browser-foot">
+      <div class="legend">
+        <span class="lg lg-act1"></span>第一幕
+        <span class="lg lg-act2"></span>第二幕
+        <span class="lg lg-act3"></span>第三幕
+        <span class="lg lg-card"></span>片头/尾
+      </div>
+    </div>
+  </aside>
+
+  <!-- ────────── 中央：检视器 + 播放器 ────────── -->
+  <section class="viewer">
+    <div class="viewer-head">
+      <div class="tabs">
+        <button class="tab tab-active">检视器</button>
+        <button class="tab">节目</button>
+        <button class="tab">效果</button>
+        <button class="tab">色彩</button>
+      </div>
+      <div class="viewer-status">
+        <span class="dot dot-rec"></span>已渲染 · <span data-bind="meta.stats.shots"></span> 镜头 / <span data-bind="meta.stats.acts"></span> 段
+      </div>
+    </div>
+
+    <div class="viewer-stage" id="viewer-stage">
+      <video id="player" preload="auto" playsinline></video>
+      <div class="viewer-overlay" id="viewer-overlay">
+        <div class="overlay-card">
+          <div class="overlay-icon">▶</div>
+          <div class="overlay-title">点击播放演示成片</div>
+          <div class="overlay-sub">J / K / L 控制播放速度 · 空格 暂停 · ←/→ 上一镜 / 下一镜</div>
+        </div>
+      </div>
+      <div class="viewer-banner">
+        <span class="badge" id="v-act">—</span>
+        <span class="banner-title" id="v-title">—</span>
+        <span class="banner-time" id="v-time">00:00 / 00:00</span>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button class="t-btn" id="t-prev-shot" title="上一镜 (←)">⏮</button>
+      <button class="t-btn" id="t-step-back" title="后退 5 秒 (J)">−5s</button>
+      <button class="t-btn t-btn-main" id="t-play" title="播放/暂停 (K)">▶</button>
+      <button class="t-btn" id="t-step-fwd"  title="前进 5 秒 (L)">+5s</button>
+      <button class="t-btn" id="t-next-shot" title="下一镜 (→)">⏭</button>
+
+      <div class="t-time" id="t-timecode">00:00:00.000</div>
+
+      <div class="t-rate">
+        <button class="rate-btn" data-rate="0.5">0.5×</button>
+        <button class="rate-btn" data-rate="1">1×</button>
+        <button class="rate-btn" data-rate="1.5">1.5×</button>
+        <button class="rate-btn" data-rate="2">2×</button>
+      </div>
+
+      <div class="t-vol">
+        <span>🔊</span>
+        <input type="range" id="t-volume" min="0" max="1" step="0.05" value="1" />
+      </div>
+
+      <div class="t-jump">
+        <span>跳到幕：</span>
+        <button class="jump-btn" data-act="片头">片头</button>
+        <button class="jump-btn" data-act="第一幕 · 开场">I</button>
+        <button class="jump-btn" data-act="第二幕 · Demo 演示">II</button>
+        <button class="jump-btn" data-act="第三幕 · 结尾">III</button>
+        <button class="jump-btn" data-act="片尾">片尾</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────── 右侧：元数据面板 ────────── -->
+  <aside class="inspector" id="inspector">
+    <div class="panel-head">
+      <span class="panel-title">元数据</span>
+      <span class="panel-sub">Inspector</span>
+    </div>
+
+    <div class="ins-section">
+      <div class="ins-row">
+        <div class="ins-k">幕次</div>
+        <div class="ins-v" id="i-act">—</div>
+      </div>
+      <div class="ins-row">
+        <div class="ins-k">镜头 ID</div>
+        <div class="ins-v mono" id="i-id">—</div>
+      </div>
+      <div class="ins-row">
+        <div class="ins-k">Demo 页面</div>
+        <div class="ins-v"><span class="page-pill" id="i-page">—</span></div>
+      </div>
+      <div class="ins-row grid-2">
+        <div>
+          <div class="ins-k">入点</div>
+          <div class="ins-v mono" id="i-tin">—</div>
+        </div>
+        <div>
+          <div class="ins-k">出点</div>
+          <div class="ins-v mono" id="i-tout">—</div>
+        </div>
+      </div>
+      <div class="ins-row grid-2">
+        <div>
+          <div class="ins-k">镜头时长</div>
+          <div class="ins-v mono" id="i-dur">—</div>
+        </div>
+        <div>
+          <div class="ins-k">旁白字数</div>
+          <div class="ins-v mono" id="i-vo-len">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ins-section">
+      <div class="ins-section-title">画面字幕</div>
+      <div class="ins-sub" id="i-sub">—</div>
+    </div>
+
+    <div class="ins-section">
+      <div class="ins-section-title">旁白文稿</div>
+      <div class="ins-vo" id="i-vo">—</div>
+    </div>
+
+    <div class="ins-section" id="i-metrics-section" hidden>
+      <div class="ins-section-title">关键指标</div>
+      <div class="ins-metrics" id="i-metrics"></div>
+    </div>
+
+    <div class="ins-section">
+      <div class="ins-section-title">交互动作（自动演示）</div>
+      <div class="ins-actions" id="i-actions">—</div>
+    </div>
+
+    <div class="ins-section">
+      <div class="ins-section-title">关联交付物</div>
+      <div class="ins-links">
+        <a class="il" href="index.html" target="_blank">源 Demo 单页应用 ↗</a>
+        <a class="il" href="#" target="_blank">分镜脚本与旁白文稿 ↗</a>
+        <a class="il" href="#" target="_blank">分镜源代码（编排源） ↗</a>
+        <a class="il" href="#" target="_blank">视频生成代码 ↗</a>
+        <a class="il" href="#" target="_blank">项目总 README ↗</a>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- ====================================================== -->
+<!-- 底部：时间线                                            -->
+<!-- ====================================================== -->
+<footer class="timeline-bar" id="timeline">
+  <div class="tl-head">
+    <div class="tl-title">时间线 · Timeline</div>
+    <div class="tl-ruler" id="tl-ruler"></div>
+  </div>
+  <div class="tl-track" id="tl-track"><!-- JS 注入镜头块 --></div>
+  <div class="tl-foot">
+    <div class="tl-tip">点击镜头跳转 · 双击镜头聚焦 · 拖动播放头跟随</div>
+    <div class="tl-cursor" id="tl-cursor"></div>
+  </div>
+</footer>
+
+<!-- ====================================================== -->
+<!-- 模态：项目信息                                          -->
+<!-- ====================================================== -->
+<div class="modal" id="modal-project" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <span>项目信息 · Project Info</span>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<button class="fab-info" id="fab-info" title="项目信息">i</button>
+
+<!-- ====================================================== -->
+<!-- 脚本                                                    -->
+<!-- ====================================================== -->
+<script>
+/* Auto-generated from video/shots_script.py. Do not edit by hand. */
+window.STATION_DATA = {
+  "meta": {
+    "title": "黔货出海 · 都匀毛尖 — 演示视频",
+    "subtitle": "面向东盟市场的跨境物流与合规履约方案 · Demo 演示成片",
+    "videoFile": "#",
+    "videoCandidates": [
+      "#",
+      "../../video/output/黔货出海·都匀毛尖_Demo演示视频.mp4",
+      "/video/output/黔货出海·都匀毛尖_Demo演示视频.mp4"
+    ],
+    "posterFile": "../video/cards/card_TITLE.mp4",
+    "posterAlt": "../video/cards/card_END.mp4",
+    "specs": {
+      "resolution": "1600 × 900",
+      "fps": "30",
+      "codec": "H.264 (libx264, CRF 19)",
+      "audioCodec": "AAC 24 kHz / 单声道",
+      "duration": "25 分 27 秒（1527.13 秒）",
+      "size": "69 MB",
+      "subtitleFont": "Microsoft YaHei",
+      "tts": "edge-tts · zh-CN-YunxiNeural (+10%) · 实测 306 字/分钟"
+    },
+    "team": {
+      "project": "中国国际大学生创新创业大赛（2026）· 产业赛道企业命题组",
+      "sponsor": "命题企业：北京京东乾石科技有限公司",
+      "org": "黔南民族师范学院 · 数智乡村振兴现代产业学院",
+      "lead": "项目负责人：吉银嫣"
+    },
+    "links": {
+      "demo": "index.html",
+      "storyboard": "#",
+      "videoSource": "#",
+      "shotsScript": "#",
+      "videoGen": "#"
+    },
+    "stats": {
+      "shots": 23,
+      "acts": 5,
+      "scenes": 21,
+      "total_seconds": 957.0
+    }
+  },
+  "acts": [
+    {
+      "name": "片头",
+      "items": [
+        {
+          "id": "TITLE",
+          "title": "项目标题卡",
+          "t_in": 0.0,
+          "t_out": 28.0
+        }
+      ]
+    },
+    {
+      "name": "第一幕 · 开场",
+      "items": [
+        {
+          "id": "01",
+          "title": "项目背景与命题来源",
+          "t_in": 28.0,
+          "t_out": 68.0
+        },
+        {
+          "id": "02",
+          "title": "产业基础：都匀毛尖已具备出海底盘",
+          "t_in": 68.0,
+          "t_out": 99.0
+        },
+        {
+          "id": "03",
+          "title": "市场机遇：为什么首选东盟",
+          "t_in": 99.0,
+          "t_out": 133.0
+        },
+        {
+          "id": "04",
+          "title": "六重痛点：中小茶企为何难以独立出海",
+          "t_in": 133.0,
+          "t_out": 173.0
+        },
+        {
+          "id": "05",
+          "title": "为什么是马来西亚 + 项目目标",
+          "t_in": 173.0,
+          "t_out": 216.0
+        }
+      ]
+    },
+    {
+      "name": "第二幕 · Demo 演示",
+      "items": [
+        {
+          "id": "06",
+          "title": "Demo 总览：履约中台驾驶舱",
+          "t_in": 216.0,
+          "t_out": 253.0
+        },
+        {
+          "id": "07",
+          "title": "功能一：AI 合规引擎 · 知识库与预审启动",
+          "t_in": 253.0,
+          "t_out": 291.0
+        },
+        {
+          "id": "08",
+          "title": "功能一：法规逐条比对与风险标注",
+          "t_in": 291.0,
+          "t_out": 338.0
+        },
+        {
+          "id": "09",
+          "title": "功能一：一键生成全套清关单据与价值测算",
+          "t_in": 338.0,
+          "t_out": 374.0
+        },
+        {
+          "id": "10",
+          "title": "功能二：一物一码 · 全链路上链存证",
+          "t_in": 374.0,
+          "t_out": 420.0
+        },
+        {
+          "id": "11",
+          "title": "功能二：碳足迹核算与双码核验",
+          "t_in": 420.0,
+          "t_out": 461.0
+        },
+        {
+          "id": "12",
+          "title": "功能三：三张网 + 三级仓物流底座",
+          "t_in": 461.0,
+          "t_out": 503.0
+        },
+        {
+          "id": "13",
+          "title": "功能三：在途运单与温湿度实时监控",
+          "t_in": 503.0,
+          "t_out": 542.0
+        },
+        {
+          "id": "14",
+          "title": "功能三：物流轨迹与异常防控闭环",
+          "t_in": 542.0,
+          "t_out": 582.0
+        },
+        {
+          "id": "15",
+          "title": "功能四：八步履约闭环全流程演示",
+          "t_in": 582.0,
+          "t_out": 639.0
+        },
+        {
+          "id": "16",
+          "title": "功能五：物流选型量化决策与阶段切换",
+          "t_in": 639.0,
+          "t_out": 692.0
+        }
+      ]
+    },
+    {
+      "name": "第三幕 · 结尾",
+      "items": [
+        {
+          "id": "17",
+          "title": "单件成本拆解：100 元如何构成",
+          "t_in": 692.0,
+          "t_out": 733.0
+        },
+        {
+          "id": "18",
+          "title": "三年财务预测与投资回报",
+          "t_in": 733.0,
+          "t_out": 784.0
+        },
+        {
+          "id": "19",
+          "title": "风险管控与三级预警机制",
+          "t_in": 784.0,
+          "t_out": 831.0
+        },
+        {
+          "id": "20",
+          "title": "实施里程碑：四阶段推进节奏",
+          "t_in": 831.0,
+          "t_out": 876.0
+        },
+        {
+          "id": "21",
+          "title": "价值归纳：让贵州好茶走进东盟万家",
+          "t_in": 876.0,
+          "t_out": 919.0
+        }
+      ]
+    },
+    {
+      "name": "片尾",
+      "items": [
+        {
+          "id": "END",
+          "title": "价值归纳卡",
+          "t_in": 919.0,
+          "t_out": 957.0
+        }
+      ]
+    }
+  ],
+  "shots": [
+    {
+      "id": "TITLE",
+      "act": "片头",
+      "title": "项目标题卡",
+      "page": "-",
+      "subtitle": "黔货出海 · 都匀毛尖 — 面向东盟市场的跨境物流与合规履约方案",
+      "narration": "中国国际大学生创新创业大赛二零二六年产业赛道，由北京京东乾石科技有限公司命题。我们的项目是黔货出海·都匀毛尖，一套面向东盟市场的跨境物流与合规履约方案。以马来西亚为首站市场，以 AI 合规引擎与双认证溯源为技术底座，我们把贵州好茶，系统性地送进东盟万家。",
+      "dur": 28,
+      "t_in": 0.0,
+      "actions": [],
+      "t_out": 28.0
+    },
+    {
+      "id": "01",
+      "act": "第一幕 · 开场",
+      "title": "项目背景与命题来源",
+      "page": "dashboard",
+      "subtitle": "RCEP 零关税 + 六部门历史经典产业政策 · 京东乾石命题",
+      "narration": "中国与东盟贸易额已达七点五五万亿元，连续多年稳居中国第一大贸易伙伴。RCEP 生效四年，关税减让、通关便利化与原产地累积规则持续降低跨境交易成本。与此同时，工信部等六部门将茶叶列入历史经典产业重点扶持，明确支持开展碳足迹核算、依托 RCEP 搭建出海平台。在这样的政策窗口下，北京京东乾石科技有限公司提出命题：为都匀毛尖设计一套面向东盟市场的跨境物流与合规履约方案。",
+      "actions": [
+        "goto",
+        "wait",
+        "kpi",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 40,
+      "t_in": 28.0,
+      "t_out": 68.0
+    },
+    {
+      "id": "02",
+      "act": "第一幕 · 开场",
+      "title": "产业基础：都匀毛尖已具备出海底盘",
+      "page": "dashboard",
+      "subtitle": "品牌价值 55.88 亿元 · 茶园 138 万亩 · 出口 4862 万美元",
+      "narration": "项目不是从零开始。都匀毛尖品牌价值五十五点八八亿元，位列贵州第一、全国第十三；全州茶园面积一百三十八万亩，其中欧标茶园二十三万亩；茶叶出口额四千八百六十二万美元，同比增长百分之七点三，东南亚市场占比已达百分之四十六点二。一百五十三座茶园基地接入溯源平台，八十家企业具备出口资质。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 31,
+      "t_in": 68.0,
+      "t_out": 99.0
+    },
+    {
+      "id": "03",
+      "act": "第一幕 · 开场",
+      "title": "市场机遇：为什么首选东盟",
+      "page": "dashboard",
+      "subtitle": "东盟市场 45 亿美元 · 中国占进口额 29.2% · 关税节省 10%—25%",
+      "narration": "东盟十国六点八亿人口，二十到四十五岁年轻群体占比超过四成。二零二六年东盟茶叶市场规模预计突破四十五亿美元，中国是其最大茶叶进口来源国，占进口额百分之二十九点二。RCEP 生效后，中国茶叶出口东盟享受零关税，可节省百分之十到百分之二十五的关税成本。马来西亚线上茶叶销售占比已突破百分之三十，跨境电商渠道成熟。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait"
+      ],
+      "dur": 34,
+      "t_in": 99.0,
+      "t_out": 133.0
+    },
+    {
+      "id": "04",
+      "act": "第一幕 · 开场",
+      "title": "六重痛点：中小茶企为何难以独立出海",
+      "page": "pain",
+      "subtitle": "市场定位 · 跨境合规 · 物流选型 · 标签溯源 · 履约成本 · 风险管控",
+      "narration": "市场虽然广阔，但中小茶企独立出海要跨过六道坎。第一，市场定位不清晰，缺乏东盟市场细分研究；第二，跨境合规压力突出，各国标准与认证体系差异显著；第三，物流模式选型困难，绿茶对储运温湿度要求严苛；第四，标签溯源不完善，多语言包装常因法规细节不合规被退回；第五，综合履约成本偏高，物流、关税、认证成本层层叠加；第六，风险管控不健全，面对通关延误与汇率波动缺乏预警机制。",
+      "actions": [
+        "goto",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 40,
+      "t_in": 133.0,
+      "t_out": 173.0
+    },
+    {
+      "id": "05",
+      "act": "第一幕 · 开场",
+      "title": "为什么是马来西亚 + 项目目标",
+      "page": "pain",
+      "subtitle": "进口均价 23.09 美元/kg（出口均价 6 倍）· 华人占比 23% · 零关税 88%",
+      "narration": "在东盟十国中，我们选择马来西亚作为首站。第一，溢价能力突出：马来西亚从中国进口茶叶均价二十三点零九美元每千克，约为中国茶叶平均出口单价的六倍。第二，文化高度契合：华人占比约百分之二十三，茶文化根基深厚，高端绿茶与礼品茶需求旺盛。第三，政策准入红利：RCEP 框架下最终零关税比例达百分之八十八，中国占其茶叶进口总额的百分之四十二。据此，我们以马来西亚为样板验证，再向泰国规模拓展、越南产业深耕。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 43,
+      "t_in": 173.0,
+      "t_out": 216.0
+    },
+    {
+      "id": "06",
+      "act": "第二幕 · Demo 演示",
+      "title": "Demo 总览：履约中台驾驶舱",
+      "page": "dashboard",
+      "subtitle": "端到端履约价值主线 · 四大核心指标",
+      "narration": "接下来用一个可运行的 Demo，演示这套方案如何真正落地运转。这是 Demo 的主界面——都匀毛尖跨境履约平台。顶部是三大技术底座的状态栏，左侧是八个功能模块的导航。驾驶舱中央是端到端履约价值主线：从茶园源头、AI 合规预审、双码赋码，经广西边境仓、海陆空双通道，最后到 JoyExpress 派送签收。这条主线，就是本项目要交付的核心能力。",
+      "actions": [
+        "goto",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait"
+      ],
+      "dur": 37,
+      "t_in": 216.0,
+      "t_out": 253.0
+    },
+    {
+      "id": "07",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能一：AI 合规引擎 · 知识库与预审启动",
+      "page": "compliance",
+      "subtitle": "东盟六国法规库 1,284 条 · LLM + RAG · 判定准确率 99.2%",
+      "narration": "第一个核心功能，AI 智能合规引擎。我们构建了覆盖东盟六国的法规动态知识库，深度整合马来西亚 MS 标准、泰国 TIS 标准等核心法规，共一千二百八十四条条款。技术路线是大语言模型微调加上 RAG 检索增强，实现复杂法规条款的精准抽取与规则动态映射，并建立法规变更实时监测订阅机制，配合专家人工终审。现在，以都匀毛尖特级五十克出口马来西亚为例，启动合规预审。",
+      "actions": [
+        "goto",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "clickAt",
+        "wait",
+        "audit",
+        "wait"
+      ],
+      "dur": 38,
+      "t_in": 253.0,
+      "t_out": 291.0
+    },
+    {
+      "id": "08",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能一：法规逐条比对与风险标注",
+      "page": "compliance",
+      "subtitle": "42 项条款比对 · 40 项通过 · 2 项提示 · 0 项拦截",
+      "narration": "引擎开始逐条比对。第一项，MS 二九五农残限量联苯菊酯，标准不超过零点零五毫克每公斤，实测零点零一二，通过。第二项，水分含量标准不超过百分之七，实测百分之五点二，通过。第三项，FSQO 食品安全条例的重金属铅，标准不超过二毫克每公斤，实测零点三八，通过。第四项，JAKIM 清真认证，生产链合规性证书有效，通过。第五项，标签法规要求配料表使用马来语或英语，我们采用双语标注，通过。第六项提示：净含量公制单位标注的字体高度需要复核。",
+      "actions": [
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 47,
+      "t_in": 291.0,
+      "t_out": 338.0
+    },
+    {
+      "id": "09",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能一：一键生成全套清关单据与价值测算",
+      "page": "compliance",
+      "subtitle": "7 类清关单据自动输出 · 审核 3—5 天 → 30 分钟 · 三年省 60 万元",
+      "narration": "四十二项条款比对完成，四十项通过，两项提示待复核，未出现拦截项，全程三十分钟。合规判定通过后，引擎自动生成全套清关资料：商业发票、装箱单、提单与运单、保险单、植物检疫证书、以及嵌入 RCEP 原产地规则声明的原产地证明和第三方质检报告，共七类单证。经测算，AI 引擎每年可节约合规人力成本约十万元，三年累计节约超过六十万元。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait"
+      ],
+      "dur": 36,
+      "t_in": 338.0,
+      "t_out": 374.0
+    },
+    {
+      "id": "10",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能二：一物一码 · 全链路上链存证",
+      "page": "trace",
+      "subtitle": "国内质量追溯 + 跨境物流追溯 + 碳足迹核算 · 三链合一",
+      "narration": "第二个核心功能，区块链溯源与碳足迹双认证。我们把国内质量追溯、跨境物流追溯与生命周期碳足迹核算三链合一，批次级细化。现在演示全链路上链存证。第一个节点，茶园源头：都匀毛尖核心产区三号欧标茶园，鲜叶采摘一百二十八公斤，上链高度四百一十八万二千三百七十七。第二个节点，鲜叶检测：农残二十二项全项合格。接着依次是初制加工、精制与质检、包装赋码、碳足迹核算，最后出库上链。七个节点全部写入区块链，哈希值不可篡改、可追溯、可审计。",
+      "actions": [
+        "goto",
+        "wait",
+        "move",
+        "wait",
+        "clickAt",
+        "wait",
+        "trace",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 46,
+      "t_in": 374.0,
+      "t_out": 420.0
+    },
+    {
+      "id": "11",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能二：碳足迹核算与双码核验",
+      "page": "trace",
+      "subtitle": "ISO 14067:2018 批次级核算 · 单件 0.46 kgCO₂e · 低于行业均值 18.6%",
+      "narration": "碳足迹部分，我们依据 GB/T 二四〇六七与 ISO 一四〇六七标准，按种植、加工、包装、运输四个环节做批次级核算。单件五十克的碳足迹为零点四六千克二氧化碳当量，其中种植环节占百分之三十点四，运输环节占百分之三十四点八，整体较行业均值低百分之十八点六。地理标志溯源码与碳足迹码共同构成双码标识，一物一码绑定单批次产品。这既强化了地理标志产品保护，也直接呼应了碳足迹核算的政策导向。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 41,
+      "t_in": 420.0,
+      "t_out": 461.0
+    },
+    {
+      "id": "12",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能三：三张网 + 三级仓物流底座",
+      "page": "logistics",
+      "subtitle": "京东仓网 / 末端配送网 / 航空网 + 产地仓→边境仓→海外仓",
+      "narration": "第三个核心功能，智能物流调度系统。它以京东物流的三张网为运力底座：覆盖二十五国的全球仓网、JoyExpress 末端配送网，以及高效的航空网。在这之上，我们搭建三级仓储链路：产地揽收仓、广西边境仓、马来西亚区域分拨仓。货品在广西边境仓集货，一仓即可辐射多国，缩短跨境中转路径。海运干线作为成本优势的基础保障，空运快线作为应急补货通道，系统根据时效要求与成本预算动态切换最优方案。",
+      "actions": [
+        "goto",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait"
+      ],
+      "dur": 42,
+      "t_in": 461.0,
+      "t_out": 503.0
+    },
+    {
+      "id": "13",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能三：在途运单与温湿度实时监控",
+      "page": "logistics",
+      "subtitle": "运单 100% 可视化 · 温度 19.1℃ / 湿度 65% · 时效 5—10 天",
+      "narration": "这是一张真实的在途运单：都匀毛尖特级五十克共两百件，从贵州都匀产地揽收仓出发，经广西凭祥边境仓，发往马来西亚吉隆坡分拨仓，采用海运干线、边境仓模式。在途温湿度实时监控：当前温度十九点一度，湿度百分之六十五，处于绿茶储运的安全区间。温湿度传感器数据实时上链，物流节点可视化率达到百分之百。一旦出现超温报警或滞港预警，系统自动推送并干预，异常响应不超过两小时。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 39,
+      "t_in": 503.0,
+      "t_out": 542.0
+    },
+    {
+      "id": "14",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能三：物流轨迹与异常防控闭环",
+      "page": "logistics",
+      "subtitle": "出库→干线→边仓→清关→装船→到港→派送 · 6 类异常防控",
+      "narration": "轨迹视图完整记录了从出库到签收的节点：产地揽收仓出库发运，国内干线运输，广西边境仓入仓抽检，凭祥口岸清关放行，北部湾港装船离港，马来西亚巴生港到港，最后吉隆坡末端派送。右侧是异常防控模块：滞港预警、加急派送、区域仓备用、超温报警、冷链干预与跨境保险兜底，六类措施让通关延误、退换货与汇率波动等风险可被识别与缓冲。这就是「预测—调度—跟踪—应急」的智能物流闭环。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 40,
+      "t_in": 542.0,
+      "t_out": 582.0
+    },
+    {
+      "id": "15",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能四：八步履约闭环全流程演示",
+      "page": "fulfillment",
+      "subtitle": "订单接入→合规预审→产地备货→入境边仓→跨境干线→口岸清关→末端配送→签收售后",
+      "narration": "第四个功能，八步履约闭环，这也是整套方案的运营主线。第一步，订单接入：多平台订单同步汇聚至履约中台。第二步，AI 合规预审：法规匹配、标签预检与风险识别，三十分钟完成。第三步，产地备货：核心产区直采，完成质检、跨境包装与双码赋码。第四步，入境边仓：集货至广西边境仓，入仓抽检合格后登记入库。第五步，跨境干线：海运与空运双通道，全程温湿度监控。第六步，口岸清关：合规预审、提前申报、抵港审单三段并行，一到两天放行。第七步，末端配送：JoyExpress 完成属地派送。第八步，签收售后：轨迹回传、退换货响应，数据回流形成闭环。",
+      "actions": [
+        "goto",
+        "wait",
+        "clickAt",
+        "wait",
+        "flow",
+        "wait",
+        "flowStep",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait"
+      ],
+      "dur": 57,
+      "t_in": 582.0,
+      "t_out": 639.0
+    },
+    {
+      "id": "16",
+      "act": "第二幕 · Demo 演示",
+      "title": "功能五：物流选型量化决策与阶段切换",
+      "page": "decision",
+      "subtitle": "边境仓 77.25 分最优 · 直邮 83 元 → 边境仓 69 元 → 海外仓 68 元",
+      "narration": "第五个功能，解决物流选型难题。我们用九项指标、明确的权重，对国际直邮、海外仓、边境仓三种模式做量化评分。国际直邮六十八点二五分，海外仓七十二点二五分，边境仓以七十七点二五分综合得分最高，成为推荐方案。原因是它平衡了成本、时效与库存风险：一仓辐射多国，滞销时灵活调货，国内仓储成本更低。据此我们设计分阶段动态切换策略：导入期月销低于五百单用国际直邮，单件八十三元；增长期月销五百到两千单切换到边境仓，单件降至六十九元；成熟期月销超过两千单布局海外仓，单件六十八元，实现一到三天极速达。",
+      "actions": [
+        "goto",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 53,
+      "t_in": 639.0,
+      "t_out": 692.0
+    },
+    {
+      "id": "17",
+      "act": "第三幕 · 结尾",
+      "title": "单件成本拆解：100 元如何构成",
+      "page": "decision",
+      "subtitle": "产品 40 + 物流 25 + 平台 15 + 营销 10 + 运营 5 + 合规 5 = 100 元",
+      "narration": "再看成本。以五十克都匀毛尖特级发往吉隆坡为例，单件综合成本一百元。产品采购、包装与质检合计四十元，占四成，是成本基石；物流成本二十五元，其中跨境段十五元占比最高；平台成本十五元，营销成本十元，运营与合规成本各五元。通过 AI 合规引擎，我们把合规成本压缩到百分之五以内。对比国际直邮的八十三元，边境仓模式单件节省十四元，这为产品在马来西亚中高端价格带的竞争提供了实在的空间。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 41,
+      "t_in": 692.0,
+      "t_out": 733.0
+    },
+    {
+      "id": "18",
+      "act": "第三幕 · 结尾",
+      "title": "三年财务预测与投资回报",
+      "page": "business",
+      "subtitle": "收入 500→1200→2500 万元 · 累计净利 1150 万元 · 回收期 1.5 年",
+      "narration": "财务测算方面，启动资金需求一百万元，覆盖产品研发、首批备货、市场推广、运营与储备。第一年聚焦马来西亚，销售收入五百万元，净利率百分之二十；第二年拓展泰国市场，营收一千二百万元，净利率提升到百分之二十五；第三年覆盖三大市场，销售收入达到两千五百万元，净利率百分之三十。三年累计净利润预计突破一千一百五十万元，投资回报率百分之一千一百五十，内部收益率约百分之八十五，投资回收期约一点五年。盈亏平衡点仅一点三七万单，远低于第一年规划的四点一六万单，安全边际率约百分之六十七。",
+      "actions": [
+        "goto",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 51,
+      "t_in": 733.0,
+      "t_out": 784.0
+    },
+    {
+      "id": "19",
+      "act": "第三幕 · 结尾",
+      "title": "风险管控与三级预警机制",
+      "page": "business",
+      "subtitle": "六大风险识别 · 24H / 72H / 7 日 三级响应",
+      "narration": "项目识别出六大核心风险，并用概率与影响二维评估法分级。合规风险与物流风险等级最高，汇率风险为中高，质量、竞争与政策风险为中。针对不同等级，我们设计了三级预警响应机制：一级预警二十四小时极速响应，适用于合规突变与通关受阻，AI 引擎完成法规比对，启用备用报关行并行申报，超七十二小时启动跨境应急协调；二级预警七十二小时专项应对，应对汇率剧烈波动与平台政策突变；三级预警七日常态防控，执行全流程品控与物流追踪，温湿度数据上链不可篡改。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 47,
+      "t_in": 784.0,
+      "t_out": 831.0
+    },
+    {
+      "id": "20",
+      "act": "第三幕 · 结尾",
+      "title": "实施里程碑：四阶段推进节奏",
+      "page": "business",
+      "subtitle": "筹备 2026.09 → 开发 2027.01 → 试运营 2027.05 → 正式运营 2027.09",
+      "narration": "落地节奏上，项目分四个阶段推进。筹备期从二零二六年九月到十二月，完成团队组建、市场调研、选品策略与合规清单，并签署京东平台合作协议。开发期从二零二七年一月到四月，开发 AI 合规引擎、对接溯源系统、完成包装设计、打通边境仓链路。试运营期五月到八月，首批产品上架，开展物流全链路压力测试与营销投放测试。二零二七年九月起进入正式运营期，实现规模化运营，建立数据回流与复盘机制。每个阶段都有明确的核心任务与关键交付成果。",
+      "actions": [
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 45,
+      "t_in": 831.0,
+      "t_out": 876.0
+    },
+    {
+      "id": "21",
+      "act": "第三幕 · 结尾",
+      "title": "价值归纳：让贵州好茶走进东盟万家",
+      "page": "dashboard",
+      "subtitle": "合规护航出海 · 数据驱动增长 · 文化赢得市场",
+      "narration": "最后，回到这套方案的核心价值。第一，它用 AI 合规引擎把三到五天的人工审核压缩到三十分钟，用确定性替代了跨境贸易中最大的不确定性；第二，它用区块链双认证溯源，把品牌价值、品质信任与碳足迹政策要求合而为一，让合规投入从成本项转为收益项；第三，它用量化评分模型给出可比较、可落地的物流选型路径，让中小茶企不必再凭经验试错。以合规护航出海，以数据驱动增长，以文化赢得市场。让贵州好茶，走进东盟万家。",
+      "actions": [
+        "goto",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "move",
+        "wait",
+        "scrollTo",
+        "wait",
+        "move",
+        "wait"
+      ],
+      "dur": 43,
+      "t_in": 876.0,
+      "t_out": 919.0
+    },
+    {
+      "id": "END",
+      "act": "片尾",
+      "title": "价值归纳卡",
+      "page": "-",
+      "subtitle": "让贵州好茶，走进东盟万家",
+      "narration": "从四十五亿美元的东盟市场，到三十分钟的合规审核；从两千五百万元的第三年销售收入，到一千一百五十万元的三年累计净利润。这套方案用确定性替代不确定性，让中小茶企的出海之路可量化、可比较、可落地。以合规护航出海，以数据驱动增长，以文化赢得市场。让贵州好茶，走进东盟万家。黔南民族师范学院数智乡村振兴现代产业学院，恳请各位评委老师批评指正。谢谢大家！",
+      "metrics": [
+        {
+          "v": "45 亿美元",
+          "l": "东盟茶叶市场规模（2026E）"
+        },
+        {
+          "v": "30 分钟",
+          "l": "AI 智能合规审核周期"
+        },
+        {
+          "v": "2500 万元",
+          "l": "第 3 年销售收入目标"
+        },
+        {
+          "v": "1150 万元",
+          "l": "三年累计净利润"
+        }
+      ],
+      "dur": 38,
+      "t_in": 919.0,
+      "actions": [],
+      "t_out": 957.0
+    }
+  ]
+};
+
+</script>
+<script>
+/* timeline.js — render 23 clips on the timeline, click to seek, ruler ticks */
+(function () {
+  'use strict';
+
+  const ACT_CLASS = {
+    '片头': 'act-card',
+    '片尾': 'act-card',
+    '第一幕 · 开场':    'act-1',
+    '第二幕 · Demo 演示': 'act-2',
+    '第三幕 · 结尾':     'act-3',
+  };
+
+  function pad(n, w) { return String(n).padStart(w, '0'); }
+  function tc(sec) {
+    const s = Math.max(0, sec);
+    const hh = Math.floor(s / 3600);
+    const mm = Math.floor((s % 3600) / 60);
+    const ss = Math.floor(s % 60);
+    const ms = Math.round((s - Math.floor(s)) * 1000);
+    return `${pad(hh,2)}:${pad(mm,2)}:${pad(ss,2)}.${pad(ms,3)}`;
+  }
+  function tcShort(sec) {
+    const s = Math.max(0, sec);
+    const mm = Math.floor(s / 60);
+    const ss = Math.floor(s % 60);
+    return `${pad(mm,2)}:${pad(ss,2)}`;
+  }
+
+  function actClass(act) { return ACT_CLASS[act] || 'act-1'; }
+
+  function pxPerSecond(totalSec) {
+    // Make all clips fit the visible track width by default.
+    // Track spans the window minus the left browser panel and paddings.
+    const trackW = window.innerWidth - 280 - 24;  // browser col + paddings
+    const pps = Math.max(0.02, trackW / Math.max(1, totalSec));
+    return pps;
+  }
+
+  function buildRuler(totalSec, pps) {
+    const ruler = document.getElementById('tl-ruler');
+    ruler.innerHTML = '';
+    // Pick a tick interval that yields ~6-12 ticks across the width.
+    const candidates = [15, 30, 60, 120, 180, 300, 600];
+    const targetTicks = 10;
+    let step = candidates[candidates.length - 1];
+    for (const c of candidates) {
+      if (totalSec / c <= targetTicks) { step = c; break; }
+    }
+    for (let t = 0; t <= totalSec + 0.01; t += step) {
+      const tick = document.createElement('div');
+      tick.className = 'tl-tick';
+      tick.style.left = (t * pps) + 'px';
+      tick.textContent = tcShort(t);
+      ruler.appendChild(tick);
+    }
+  }
+  function buildClips(shots, pps) {
+    const track = document.getElementById('tl-track');
+    track.innerHTML = '';
+    track.querySelectorAll('.tl-cursor').forEach(n => n.remove());
+
+    shots.forEach((s, idx) => {
+      const w = Math.max(6, s.dur * pps);
+      const clip = document.createElement('div');
+      clip.className = 'tl-clip ' + actClass(s.act);
+      clip.style.width = w + 'px';
+      clip.dataset.id = s.id;
+      clip.dataset.index = idx;
+      // Only show text when the clip is wide enough
+      const showText = w >= 34;
+      const showTc = w >= 54;
+      clip.innerHTML = `
+        ${showText ? `<div class="clip-id">${s.id === 'TITLE' ? '片头' : (s.id === 'END' ? '片尾' : '#' + s.id)}</div>` : ''}
+        ${showText ? `<div class="clip-title">${s.title}</div>` : ''}
+        ${showTc ? `<div class="clip-tc"><span>${tcShort(s.t_in)}</span><span>${s.dur.toFixed(0)}s</span></div>` : ''}
+      `;
+      clip.title = `${s.id} · ${s.title}\n${tcShort(s.t_in)} → ${tcShort(s.t_out)}（${s.dur}s）`;
+      clip.addEventListener('click', () => {
+        if (window.STATION_APP) window.STATION_APP.seekTo(s.t_in, s);
+      });
+      clip.addEventListener('dblclick', () => {
+        if (window.STATION_APP) window.STATION_APP.seekTo(s.t_in, s);
+      });
+      track.appendChild(clip);
+    });
+
+    const cursor = document.createElement('div');
+    cursor.id = 'tl-cursor';
+    cursor.style.left = '0px';
+    track.appendChild(cursor);
+  }
+
+  function setActiveShot(id) {
+    document.querySelectorAll('.tl-clip').forEach(n => {
+      n.classList.toggle('active', n.dataset.id === id);
+    });
+    document.querySelectorAll('.shot-item').forEach(n => {
+      n.classList.toggle('active', n.dataset.id === id);
+    });
+  }
+
+  function updateCursor(time, pps) {
+    const cursor = document.getElementById('tl-cursor');
+    if (!cursor) return;
+    cursor.style.display = 'block';
+    // Track has 12px horizontal padding; clips start there.
+    cursor.style.left = (12 + time * pps) + 'px';
+  }
+
+  function render(shots) {
+    const totalSec = shots[shots.length - 1].t_out;
+    const pps = pxPerSecond(totalSec);
+    buildRuler(totalSec, pps);
+    buildClips(shots, pps);
+    return pps;
+  }
+
+  // Expose
+  window.STATION_TIMELINE = {
+    render, setActiveShot, updateCursor, pxPerSecond, tc, tcShort,
+  };
+})();
+</script>
+<script>
+/* station.js — Main application: bootstrap, player, shortcuts, inspector binding */
+(function () {
+  'use strict';
+
+  const D = window.STATION_DATA;
+  if (!D) { console.error('STATION_DATA missing'); return; }
+
+  const $  = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+
+  function pad(n, w) { return String(n).padStart(w, '0'); }
+  function tc(sec) {
+    sec = Math.max(0, sec);
+    const hh = Math.floor(sec / 3600);
+    const mm = Math.floor((sec % 3600) / 60);
+    const ss = Math.floor(sec % 60);
+    const ms = Math.round((sec - Math.floor(sec)) * 1000);
+    return `${pad(hh,2)}:${pad(mm,2)}:${pad(ss,2)}.${pad(ms,3)}`;
+  }
+  function tcShort(sec) {
+    sec = Math.max(0, sec);
+    const mm = Math.floor(sec / 60);
+    const ss = Math.floor(sec % 60);
+    return `${pad(mm,2)}:${pad(ss,2)}`;
+  }
+
+  /* ---------- 绑定 meta 文本 ---------- */
+  function bindMeta() {
+    $$('[data-bind]').forEach(el => {
+      const path = el.getAttribute('data-bind').split('.');
+      // Paths are written without the leading "meta." — e.g. "specs.duration"
+      let v = D.meta;
+      for (const k of path) {
+        if (k === 'meta') continue;   // tolerate "meta.xxx" too
+        v = v && v[k];
+      }
+      if (v != null) el.textContent = String(v);
+    });
+  }
+
+  /* ---------- 项目浏览器 ---------- */
+  function renderBrowser() {
+    const tree = $('#acts-tree');
+    tree.innerHTML = '';
+    D.acts.forEach((act, ai) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'act';
+      const head = document.createElement('div');
+      head.className = 'act-head';
+      const dotColor = actClassColor(act.name);
+      head.innerHTML = `
+        <div class="act-name">
+          <span class="act-dot" style="background:${dotColor}"></span>
+          ${act.name}
+        </div>
+        <div class="act-count">${act.items.length}</div>
+      `;
+      head.addEventListener('click', () => {
+        wrap.classList.toggle('collapsed');
+        body.style.display = wrap.classList.contains('collapsed') ? 'none' : '';
+      });
+      const body = document.createElement('div');
+      body.className = 'act-body';
+      act.items.forEach(it => {
+        const item = document.createElement('div');
+        item.className = 'shot-item';
+        item.dataset.id = it.id;
+        item.innerHTML = `
+          <span class="shot-id">${it.id === 'TITLE' ? '◆' : (it.id === 'END' ? '◇' : it.id)}</span>
+          <span class="shot-title">${it.title}</span>
+          <span class="shot-tc">${tcShort(it.t_in)}</span>
+        `;
+        item.addEventListener('click', () => {
+          const shot = D.shots.find(s => s.id === it.id);
+          if (shot) seekTo(shot.t_in, shot);
+        });
+        body.appendChild(item);
+      });
+      wrap.appendChild(head);
+      wrap.appendChild(body);
+      tree.appendChild(wrap);
+    });
+  }
+
+  function actClassColor(name) {
+    return {
+      '片头':                  '#7c8a99',
+      '片尾':                  '#7c8a99',
+      '第一幕 · 开场':         '#2aa97b',
+      '第二幕 · Demo 演示':    '#2563b8',
+      '第三幕 · 结尾':         '#d98218',
+    }[name] || '#7c8a99';
+  }
+
+  /* ---------- 检视器播放器 ---------- */
+  const player = $('#player');
+  const overlay = $('#viewer-overlay');
+  const banner = {
+    act: $('#v-act'), title: $('#v-title'), time: $('#v-time'),
+  };
+  const tcEl = $('#t-timecode');
+
+  function setOverlay(visible) {
+    overlay.classList.toggle('hide', !visible);
+  }
+
+  function loadVideo() {
+    // Try each candidate URL until one loads. This makes the station work
+    // whether you serve from station/ or from the project root.
+    const cands = D.meta.videoCandidates && D.meta.videoCandidates.length
+      ? D.meta.videoCandidates
+      : [D.meta.videoFile];
+    let i = 0;
+    const tryNext = () => {
+      if (i >= cands.length) {
+        console.warn('[station] no video source reachable:', cands);
+        setOverlay(true);
+        return;
+      }
+      const url = cands[i++];
+      player.src = url;
+      player.load();
+    };
+    player.addEventListener('error', tryNext);
+    player.addEventListener('loadedmetadata', () => {
+      console.log('[station] video loaded:', player.src);
+      setOverlay(true);
+    }, { once: true });
+    tryNext();
+  }
+
+  function fmtTime(sec) {
+    return `${tcShort(sec)} / ${tcShort(D.shots[D.shots.length - 1].t_out)}`;
+  }
+
+  function findShotAtTime(t) {
+    return D.shots.find(s => t >= s.t_in - 0.01 && t < s.t_out) || D.shots[0];
+  }
+
+  function seekTo(t, shot, autoplay) {
+    shot = shot || findShotAtTime(t);
+    const target = Math.max(0, t);
+    const doSeek = () => { player.currentTime = target; };
+    if (player.readyState >= 1) doSeek();
+    else player.addEventListener('loadedmetadata', doSeek, { once: true });
+
+    if (autoplay !== false) {
+      player.play().then(() => setOverlay(false)).catch(() => {
+        // Not ready to play yet — keep overlay hidden anyway, poster shows frame
+        setOverlay(false);
+      });
+    }
+    updateInspector(shot);
+    window.STATION_TIMELINE.setActiveShot(shot.id);
+
+    // After seek settles, refresh current frame display
+    player.addEventListener('seeked', () => {
+      banner.time.textContent = fmtTime(player.currentTime);
+      tcEl.textContent = tc(player.currentTime);
+    }, { once: true });
+  }
+
+  function updateInspector(shot) {
+    banner.act.textContent = shot.act;
+    banner.title.textContent = shot.title;
+    banner.time.textContent = fmtTime(shot.t_in);
+
+    $('#i-act').textContent = shot.act;
+    $('#i-id').textContent = shot.id;
+    $('#i-page').textContent = shot.page || '—';
+    $('#i-tin').textContent = tc(shot.t_in);
+    $('#i-tout').textContent = tc(shot.t_out);
+    $('#i-dur').textContent = shot.dur.toFixed(1) + ' s';
+    $('#i-vo-len').textContent = (shot.narration || '').length + ' 字';
+    $('#i-sub').textContent = shot.subtitle || shot.narration || '—';
+    $('#i-vo').textContent = shot.narration || '—';
+
+    // Actions
+    const acts = $('#i-actions');
+    acts.innerHTML = '';
+    (shot.actions || []).forEach(a => {
+      const t = document.createElement('span');
+      t.className = 'act-tag';
+      t.textContent = a;
+      acts.appendChild(t);
+    });
+    if (!acts.children.length) acts.textContent = '—';
+
+    // Metrics (only for END card)
+    const ms = $('#i-metrics-section');
+    if (shot.metrics && shot.metrics.length) {
+      ms.hidden = false;
+      const m = $('#i-metrics');
+      m.innerHTML = '';
+      shot.metrics.forEach(it => {
+        const d = document.createElement('div');
+        d.className = 'ins-metric';
+        d.innerHTML = `<div class="m-v">${it.v}</div><div class="m-l">${it.l}</div>`;
+        m.appendChild(d);
+      });
+    } else {
+      ms.hidden = true;
+    }
+  }
+
+  /* ---------- 传输栏 ---------- */
+  function bindTransport() {
+    const play = $('#t-play');
+    const updatePlay = () => { play.textContent = player.paused ? '▶' : '❚❚'; };
+    play.addEventListener('click', () => {
+      if (player.paused) { player.play().catch(()=>{}); setOverlay(false); }
+      else player.pause();
+      updatePlay();
+    });
+
+    $('#t-prev-shot').addEventListener('click', () => {
+      const cur = player.currentTime;
+      const i = D.shots.findIndex(s => cur >= s.t_in - 0.01 && cur < s.t_out);
+      const prev = D.shots[Math.max(0, i - 1)];
+      seekTo(prev.t_in, prev);
+    });
+    $('#t-next-shot').addEventListener('click', () => {
+      const cur = player.currentTime;
+      const i = D.shots.findIndex(s => cur >= s.t_in - 0.01 && cur < s.t_out);
+      const next = D.shots[Math.min(D.shots.length - 1, i + 1)];
+      seekTo(next.t_in, next);
+    });
+    $('#t-step-back').addEventListener('click', () => { player.currentTime = Math.max(0, player.currentTime - 5); });
+    $('#t-step-fwd') .addEventListener('click', () => { player.currentTime = Math.min(player.duration || 0, player.currentTime + 5); });
+
+    $$('.rate-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        $$('.rate-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        player.playbackRate = parseFloat(b.dataset.rate);
+      });
+    });
+    // Default 1×
+    $$('.rate-btn').forEach(x => x.classList.toggle('active', x.dataset.rate === '1'));
+
+    $('#t-volume').addEventListener('input', e => { player.volume = parseFloat(e.target.value); });
+
+    $$('.jump-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        const act = b.dataset.act;
+        const shot = D.shots.find(s => s.act === act);
+        if (shot) seekTo(shot.t_in, shot);
+      });
+    });
+
+    player.addEventListener('play', () => { setOverlay(false); updatePlay(); });
+    player.addEventListener('pause', updatePlay);
+    player.addEventListener('ended', updatePlay);
+
+    overlay.addEventListener('click', () => {
+      player.play().catch(() => {});
+      setOverlay(false);
+    });
+  }
+
+  /* ---------- 时间码 / 进度 ---------- */
+  function bindProgress() {
+    const ppsRef = { v: window.STATION_TIMELINE.pxPerSecond(D.shots[D.shots.length - 1].t_out) };
+
+    player.addEventListener('timeupdate', () => {
+      const t = player.currentTime;
+      tcEl.textContent = tc(t);
+      banner.time.textContent = fmtTime(t);
+      window.STATION_TIMELINE.updateCursor(t, ppsRef.v);
+      // Highlight current shot if changed
+      const cur = findShotAtTime(t);
+      if (cur && cur.id !== (window.__curShot && window.__curShot.id)) {
+        window.__curShot = cur;
+        window.STATION_TIMELINE.setActiveShot(cur.id);
+        // Only update inspector if not actively scrubbing
+        if (!player.seeking) {
+          updateInspector(cur);
+        }
+      }
+    });
+  }
+
+  /* ---------- 键盘快捷键 ---------- */
+  function bindKeys() {
+    document.addEventListener('keydown', e => {
+      // Skip if user is typing in search box
+      if (e.target && e.target.tagName === 'INPUT') return;
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          if (player.paused) { player.play().catch(()=>{}); setOverlay(false); }
+          else player.pause();
+          break;
+        case 'j': case 'J':
+          player.currentTime = Math.max(0, player.currentTime - 5);
+          break;
+        case 'k': case 'K':
+          if (player.paused) player.play().catch(()=>{}); else player.pause();
+          break;
+        case 'l': case 'L':
+          player.currentTime = Math.min(player.duration || 0, player.currentTime + 5);
+          break;
+        case 'ArrowLeft':
+          $('#t-prev-shot').click();
+          break;
+        case 'ArrowRight':
+          $('#t-next-shot').click();
+          break;
+        case 'Home':
+          seekTo(0, D.shots[0]);
+          break;
+        case 'End':
+          seekTo(D.shots[D.shots.length - 1].t_in, D.shots[D.shots.length - 1]);
+          break;
+        case '0': case '1': case '2': case '3':
+          // 1/2/3 jumps to act 1/2/3
+          {
+            const map = { '1': '第一幕 · 开场', '2': '第二幕 · Demo 演示', '3': '第三幕 · 结尾' };
+            const act = map[e.key];
+            if (act) {
+              const sh = D.shots.find(s => s.act === act);
+              if (sh) seekTo(sh.t_in, sh);
+            }
+          }
+          break;
+      }
+    });
+  }
+
+  /* ---------- 搜索 ---------- */
+  function bindSearch() {
+    const input = $('#search');
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      $$('.shot-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+      $$('.act').forEach(act => {
+        const any = $$('.shot-item', act).some(i => i.style.display !== 'none');
+        act.style.display = any ? '' : 'none';
+      });
+    });
+  }
+
+  /* ---------- 项目信息模态 ---------- */
+  function bindModal() {
+    const fab = $('#fab-info');
+    const modal = $('#modal-project');
+    const close = $('#modal-close');
+    const body = $('#modal-body');
+    const open = () => {
+      const m = D.meta;
+      body.innerHTML = `
+        <h4>项目</h4>
+        <div class="kv"><div class="k">标题</div><div class="v">${m.title}</div></div>
+        <div class="kv"><div class="k">副标题</div><div class="v">${m.subtitle}</div></div>
+        <div class="kv"><div class="k">赛事</div><div class="v">${m.team.project}</div></div>
+        <div class="kv"><div class="k">命题企业</div><div class="v">${m.team.sponsor}</div></div>
+        <div class="kv"><div class="k">承担单位</div><div class="v">${m.team.org}</div></div>
+        <div class="kv"><div class="k">负责人</div><div class="v">${m.team.lead}</div></div>
+        <h4>成片规格</h4>
+        <div class="kv"><div class="k">时长</div><div class="v">${m.specs.duration}</div></div>
+        <div class="kv"><div class="k">分辨率</div><div class="v">${m.specs.resolution} @ ${m.specs.fps} fps</div></div>
+        <div class="kv"><div class="k">编码</div><div class="v">${m.specs.codec} · ${m.specs.audioCodec}</div></div>
+        <div class="kv"><div class="k">大小</div><div class="v">${m.specs.size}</div></div>
+        <div class="kv"><div class="k">字体</div><div class="v">${m.specs.subtitleFont}</div></div>
+        <div class="kv"><div class="k">TTS</div><div class="v">${m.specs.tts}</div></div>
+        <h4>镜头构成</h4>
+        <div class="kv"><div class="k">总数</div><div class="v">${m.stats.shots} 段 / ${m.stats.acts} 幕 / Demo 镜头 ${m.stats.scenes} 个</div></div>
+        <div class="kv"><div class="k">理论总长</div><div class="v">${m.stats.total_seconds.toFixed(2)} s（实际 25:27，录屏预留 headroom）</div></div>
+        <h4>关联交付物</h4>
+        <div class="kv"><div class="k">源 Demo</div><div class="v"><a href="${m.links.demo}" target="_blank">${m.links.demo}</a></div></div>
+        <div class="kv"><div class="k">分镜文档</div><div class="v"><a href="${m.links.storyboard}" target="_blank">${m.links.storyboard}</a></div></div>
+        <div class="kv"><div class="k">分镜源代码</div><div class="v"><a href="${m.links.shotsScript}" target="_blank">${m.links.shotsScript}</a></div></div>
+      `;
+      modal.hidden = false;
+    };
+    fab.addEventListener('click', open);
+    close.addEventListener('click', () => modal.hidden = true);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.hidden = true; });
+  }
+
+  /* ---------- 启动 ---------- */
+  function boot() {
+    bindMeta();
+    renderBrowser();
+    loadVideo();
+    bindTransport();
+    bindProgress();
+    bindKeys();
+    bindSearch();
+    bindModal();
+    window.STATION_TIMELINE.render(D.shots);
+    // Initial inspector: TITLE
+    updateInspector(D.shots[0]);
+    window.STATION_TIMELINE.setActiveShot(D.shots[0].id);
+    window.STATION_APP = { seekTo, findShotAtTime, player };
+    console.log('[station] ready ·', D.shots.length, 'shots ·', D.shots[D.shots.length - 1].t_out.toFixed(1), 's');
+  }
+
+  // Wait for data + dom
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+</body>
+</html>
