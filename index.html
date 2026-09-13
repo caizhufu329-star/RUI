@@ -1,0 +1,3130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黔货出海 · 都匀毛尖 | 跨境物流与合规履约 Demo</title>
+<style>
+/* ============================================================
+ * 黔货出海 · 都匀毛尖 | Demo 样式系统（浅色企业级控制台）
+ * 股票/财务色约定：涨=红(#d9384a) 跌=绿(#1a9c6b)
+ * ============================================================ */
+
+:root {
+  --tea-900: #0d3b2e;
+  --tea-800: #14503d;
+  --tea-700: #1a6b4f;
+  --tea-600: #1f8a64;
+  --tea-500: #2aa97b;
+  --tea-300: #7fd4b3;
+  --tea-100: #d9f2e7;
+  --tea-50: #eefaf5;
+
+  --ink-900: #0f1720;
+  --ink-800: #1c2733;
+  --ink-700: #35434f;
+  --ink-600: #4f5f6d;
+  --ink-500: #6b7a88;
+  --ink-400: #93a1ad;
+  --ink-300: #c2ccd6;
+  --ink-200: #dfe6ec;
+  --ink-100: #eef2f6;
+  --ink-50: #f7f9fb;
+
+  --up: #d9384a;      /* 涨 / 正向 */
+  --down: #1a9c6b;    /* 跌 / 负向 */
+  --amber: #d98218;
+  --blue: #2563b8;
+  --violet: #6b4bc4;
+
+  --bg: #f2f5f8;
+  --panel: #ffffff;
+  --line: #e2e9ef;
+  --line-strong: #ccd7e0;
+
+  --r-sm: 8px;
+  --r: 12px;
+  --r-lg: 16px;
+
+  --sh-1: 0 1px 2px rgba(16, 32, 48, .05), 0 1px 3px rgba(16, 32, 48, .04);
+  --sh-2: 0 2px 8px rgba(16, 32, 48, .07), 0 1px 3px rgba(16, 32, 48, .05);
+  --sh-3: 0 8px 24px rgba(16, 32, 48, .10), 0 2px 8px rgba(16, 32, 48, .06);
+  --sh-4: 0 16px 48px rgba(16, 32, 48, .14);
+
+  --rail: 224px;
+  --sans: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Consolas", "SFMono-Regular", "Cascadia Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink-800);
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#app { height: 100vh; display: flex; flex-direction: column; }
+
+/* ---------------- 顶栏 ---------------- */
+.topbar {
+  height: 52px; flex: 0 0 52px;
+  background: linear-gradient(100deg, var(--tea-900) 0%, var(--tea-700) 58%, var(--tea-600) 100%);
+  color: #fff;
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 18px;
+  box-shadow: var(--sh-2);
+  z-index: 40;
+}
+.tb-brand { display: flex; align-items: center; gap: 10px; }
+.tb-logo {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.28);
+  display: grid; place-items: center;
+  font-size: 16px;
+}
+.tb-title { font-size: 14.5px; font-weight: 700; letter-spacing: .4px; }
+.tb-sub { font-size: 10.5px; opacity: .72; letter-spacing: .2px; }
+.tb-tag {
+  font-size: 10px; padding: 2.5px 8px; border-radius: 20px;
+  background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
+  letter-spacing: .3px;
+}
+.tb-spacer { flex: 1; }
+.tb-clock { font-family: var(--mono); font-size: 11.5px; opacity: .8; letter-spacing: .5px; }
+.tb-status {
+  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  padding: 4px 10px; border-radius: 20px;
+  background: rgba(127, 212, 179, .18); border: 1px solid rgba(127,212,179,.34);
+}
+.tb-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--tea-300); animation: pulse 1.8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.82)} }
+
+/* ---------------- 主体 ---------------- */
+.body { flex: 1; display: flex; min-height: 0; }
+
+/* ---------------- 左侧导航 ---------------- */
+.rail {
+  width: var(--rail); flex: 0 0 var(--rail);
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  z-index: 30;
+}
+.rail-label {
+  font-size: 10px; font-weight: 700; color: var(--ink-400);
+  letter-spacing: 1.2px; text-transform: uppercase;
+  padding: 16px 18px 8px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 18px; margin: 1px 10px;
+  border-radius: var(--r-sm);
+  color: var(--ink-600); cursor: pointer;
+  font-size: 12.5px; font-weight: 500;
+  transition: background .14s, color .14s;
+  border: 1px solid transparent;
+  position: relative;
+}
+.nav-item:hover { background: var(--ink-50); color: var(--ink-900); }
+.nav-item.active {
+  background: var(--tea-50); color: var(--tea-800);
+  border-color: var(--tea-100); font-weight: 700;
+}
+.nav-item.active::before {
+  content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px; background: var(--tea-600); border-radius: 0 3px 3px 0;
+}
+.nav-ico { width: 18px; text-align: center; font-size: 13px; opacity: .92; }
+.nav-num { font-family: var(--mono); font-size: 10px; color: var(--ink-400); margin-left: auto; font-weight: 600; }
+.nav-item.active .nav-num { color: var(--tea-600); }
+
+.rail-foot {
+  margin-top: auto; padding: 14px 18px;
+  border-top: 1px solid var(--line);
+  font-size: 10.5px; color: var(--ink-400); line-height: 1.7;
+}
+.rail-foot b { color: var(--ink-600); font-weight: 600; display: block; font-size: 11px; }
+
+/* ---------------- 内容区 ---------------- */
+.stage { flex: 1; min-width: 0; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+.view { display: none; padding: 18px 22px 40px; }
+.view.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+.page-head { margin-bottom: 16px; }
+.page-head h1 {
+  margin: 0 0 5px; font-size: 20px; font-weight: 800;
+  color: var(--ink-900); letter-spacing: -.2px;
+  display: flex; align-items: center; gap: 10px;
+}
+.page-head h1 .badge {
+  font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px;
+  background: var(--tea-100); color: var(--tea-800); letter-spacing: .3px;
+}
+.page-head p { margin: 0; color: var(--ink-500); font-size: 12px; max-width: 860px; }
+
+/* ---------------- 通用面板 ---------------- */
+.panel {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r); box-shadow: var(--sh-1);
+  overflow: hidden;
+}
+.panel-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 15px; border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #fff, var(--ink-50));
+}
+.panel-head h3 { margin: 0; font-size: 13px; font-weight: 700; color: var(--ink-800); }
+.panel-head .sub { font-size: 10.5px; color: var(--ink-400); }
+.panel-head .right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.panel-body { padding: 15px; }
+.panel-body.tight { padding: 0; }
+
+.grid { display: grid; gap: 14px; }
+.g2 { grid-template-columns: repeat(2, 1fr); }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g5 { grid-template-columns: repeat(5, 1fr); }
+.g-2-1 { grid-template-columns: 2fr 1fr; }
+.g-1-2 { grid-template-columns: 1fr 2fr; }
+.g-32 { grid-template-columns: 1.6fr 1fr; }
+
+/* ---------------- KPI ---------------- */
+.kpi {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 14px 15px;
+  box-shadow: var(--sh-1); position: relative; overflow: hidden;
+}
+.kpi::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--tea-500);
+}
+.kpi.green::after { background: var(--tea-500); }
+.kpi.blue::after { background: var(--blue); }
+.kpi.amber::after { background: var(--amber); }
+.kpi.red::after { background: var(--up); }
+.kpi-val {
+  font-size: 26px; font-weight: 800; line-height: 1.1;
+  color: var(--ink-900); letter-spacing: -1px;
+  display: flex; align-items: baseline; gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.kpi-val small { font-size: 12px; font-weight: 700; color: var(--ink-500); letter-spacing: 0; }
+.kpi-lab { font-size: 11.5px; font-weight: 700; color: var(--ink-700); margin-top: 6px; }
+.kpi-note { font-size: 10.5px; color: var(--ink-400); margin-top: 3px; line-height: 1.5; }
+
+/* ---------------- 统计条 ---------------- */
+.stat-row { display: flex; gap: 0; }
+.stat {
+  flex: 1; padding: 11px 14px;
+  border-right: 1px solid var(--line);
+}
+.stat:last-child { border-right: none; }
+.stat .v { font-size: 17px; font-weight: 800; color: var(--ink-900); font-variant-numeric: tabular-nums; }
+.stat .k { font-size: 10.5px; color: var(--ink-500); margin-top: 2px; }
+
+/* ---------------- 表格 ---------------- */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+table.tbl th {
+  text-align: left; padding: 8px 12px;
+  background: var(--ink-50); color: var(--ink-600);
+  font-weight: 700; font-size: 10.5px; letter-spacing: .3px;
+  border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+}
+table.tbl td {
+  padding: 8px 12px; border-bottom: 1px solid var(--ink-100);
+  color: var(--ink-700); vertical-align: middle;
+}
+table.tbl tbody tr:hover { background: var(--tea-50); }
+table.tbl td.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+table.tbl tr.total-row td { background: var(--ink-50); font-weight: 800; color: var(--ink-900); }
+
+/* ---------------- 标签 ---------------- */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .2px;
+  border: 1px solid transparent; white-space: nowrap;
+}
+.tag.teal { background: var(--tea-100); color: var(--tea-800); border-color: #b9e5d2; }
+.tag.red { background: #fdecee; color: #b32436; border-color: #f7cbd2; }
+.tag.green { background: #e6f6ef; color: #14724e; border-color: #bfe7d5; }
+.tag.amber { background: #fdf3e3; color: #9a5c0d; border-color: #f6dcb4; }
+.tag.blue { background: #eaf1fb; color: #1d4e94; border-color: #c6dbf5; }
+.tag.slate { background: var(--ink-100); color: var(--ink-600); border-color: var(--ink-200); }
+.tag.violet { background: #f0ecfc; color: #5236a3; border-color: #d9cff7; }
+
+/* ---------------- 按钮 ---------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 700; font-family: var(--sans);
+  background: var(--tea-700); color: #fff;
+  border: 1px solid var(--tea-700); cursor: pointer;
+  transition: all .14s; white-space: nowrap;
+}
+.btn:hover { background: var(--tea-800); box-shadow: var(--sh-2); }
+.btn:active { transform: translateY(1px); }
+.btn.ghost { background: #fff; color: var(--ink-700); border-color: var(--line-strong); }
+.btn.ghost:hover { background: var(--ink-50); border-color: var(--ink-300); color: var(--ink-900); }
+.btn.amber { background: var(--amber); border-color: var(--amber); }
+.btn.amber:hover { background: #bf7214; }
+.btn.sm { padding: 5px 11px; font-size: 11px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------------- 进度 / 计量 ---------------- */
+.meter { height: 7px; background: var(--ink-100); border-radius: 20px; overflow: hidden; }
+.meter > i {
+  display: block; height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg, var(--tea-500), var(--tea-700));
+  transition: width .7s cubic-bezier(.22,.68,.36,1);
+}
+.meter.slim { height: 5px; }
+
+/* ---------------- 环形进度 ---------------- */
+.ring { position: relative; display: grid; place-items: center; }
+.ring svg { transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-linecap: round; }
+.ring .bg { stroke: var(--ink-100); }
+.ring .fg { stroke: var(--tea-600); transition: stroke-dashoffset 1s cubic-bezier(.22,.68,.36,1); }
+.ring .val {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 15px; font-weight: 800; color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- 八步闭环流程 ---------------- */
+.flow-track {
+  position: relative; padding: 8px 0 4px;
+}
+.flow-steps { display: flex; gap: 0; position: relative; }
+.flow-step {
+  flex: 1; min-width: 0; position: relative;
+  padding: 0 5px; cursor: pointer;
+}
+.flow-step .node {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--ink-300);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 800;
+  color: var(--ink-500); margin: 0 auto 8px;
+  transition: all .3s; position: relative; z-index: 2;
+}
+.flow-step .bar {
+  position: absolute; top: 16px; left: 50%; right: -50%; height: 2px;
+  background: var(--ink-200); z-index: 1; transition: background .3s;
+}
+.flow-step:last-child .bar { display: none; }
+.flow-step .lbl {
+  text-align: center; font-size: 11px; font-weight: 700;
+  color: var(--ink-600); transition: color .3s;
+}
+.flow-step .dur {
+  text-align: center; font-size: 9.5px; color: var(--ink-400);
+  font-family: var(--mono); margin-top: 2px;
+}
+.flow-step.done .node { background: var(--tea-600); border-color: var(--tea-600); color: #fff; }
+.flow-step.done .bar { background: var(--tea-500); }
+.flow-step.done .lbl { color: var(--tea-800); }
+.flow-step.active .node {
+  background: #fff; border-color: var(--tea-600); color: var(--tea-700);
+  box-shadow: 0 0 0 5px rgba(42,169,123,.16); transform: scale(1.1);
+}
+.flow-step.active .lbl { color: var(--tea-700); font-weight: 800; }
+.flow-step.active .bar { background: linear-gradient(90deg, var(--tea-500), var(--ink-200)); }
+
+/* ---------------- 步骤详情卡 ---------------- */
+.step-detail {
+  margin-top: 16px; border: 1px solid var(--line); border-radius: var(--r);
+  background: linear-gradient(160deg, var(--tea-50), #fff 55%);
+  padding: 16px; min-height: 168px;
+}
+.step-detail .sd-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.sd-no {
+  font-family: var(--mono); font-size: 20px; font-weight: 800;
+  color: var(--tea-500); letter-spacing: -1px;
+}
+.sd-title { font-size: 15px; font-weight: 800; color: var(--ink-900); }
+.sd-en { font-size: 10.5px; color: var(--ink-400); font-family: var(--mono); }
+.sd-desc { font-size: 12px; color: var(--ink-600); line-height: 1.75; margin: 0 0 12px; }
+.sd-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.sd-box {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 10px 12px;
+}
+.sd-box .bt {
+  font-size: 10px; font-weight: 800; color: var(--ink-400);
+  letter-spacing: .8px; margin-bottom: 6px;
+}
+.sd-box ul { margin: 0; padding-left: 15px; }
+.sd-box li { font-size: 11.5px; color: var(--ink-700); margin-bottom: 3px; }
+.sd-box .sys { font-size: 11.5px; color: var(--tea-800); font-weight: 700; }
+
+/* ---------------- 合规引擎 ---------------- */
+.engine-bar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: linear-gradient(100deg, var(--tea-900), var(--tea-700));
+  border-radius: var(--r); padding: 14px 16px; color: #fff;
+  box-shadow: var(--sh-2);
+}
+.engine-bar .eb-t { font-size: 13.5px; font-weight: 800; }
+.engine-bar .eb-d { font-size: 10.5px; opacity: .75; margin-top: 2px; }
+.engine-bar .eb-sp { flex: 1; }
+.engine-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+.engine-chip {
+  font-size: 10.5px; font-family: var(--mono); padding: 4px 9px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+  border-radius: 6px; letter-spacing: .3px;
+}
+
+.audit-progress {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 15px; border-bottom: 1px solid var(--line);
+  background: var(--ink-50);
+}
+.audit-progress .ap-t { font-size: 11.5px; font-weight: 700; color: var(--ink-700); }
+.audit-progress .ap-v { font-family: var(--mono); font-size: 11.5px; color: var(--tea-700); font-weight: 700; margin-left: auto; }
+.ap-meter { flex: 1; }
+
+/* 单据流 */
+.doc-flow { display: flex; flex-direction: column; gap: 7px; }
+.doc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: #fff; font-size: 11.5px; transition: all .3s;
+}
+.doc-item .di-ico { font-size: 14px; width: 20px; text-align: center; }
+.doc-item .di-name { font-weight: 700; color: var(--ink-700); }
+.doc-item .di-meta { font-size: 10px; color: var(--ink-400); font-family: var(--mono); }
+.doc-item .di-st { margin-left: auto; }
+.doc-item.pending { opacity: .42; }
+.doc-item.gen { border-color: var(--tea-300); background: var(--tea-50); }
+
+/* ---------------- 物流对比 ---------------- */
+.mode-card {
+  border: 1.5px solid var(--line); border-radius: var(--r); background: #fff;
+  padding: 15px; position: relative; transition: all .22s;
+}
+.mode-card.rec {
+  border-color: var(--tea-500);
+  box-shadow: 0 4px 18px rgba(31,138,100,.14);
+  background: linear-gradient(170deg, var(--tea-50), #fff 40%);
+}
+.mode-card .mc-flag {
+  position: absolute; top: -9px; right: 12px;
+  background: var(--tea-600); color: #fff; font-size: 10px; font-weight: 800;
+  padding: 2.5px 9px; border-radius: 20px; letter-spacing: .4px;
+  box-shadow: var(--sh-1);
+}
+.mode-card .mc-name { font-size: 14.5px; font-weight: 800; color: var(--ink-900); }
+.mode-card .mc-score {
+  font-size: 30px; font-weight: 800; color: var(--tea-700);
+  line-height: 1; letter-spacing: -1.5px; font-variant-numeric: tabular-nums;
+}
+.mode-card .mc-score small { font-size: 11px; color: var(--ink-400); letter-spacing: 0; font-weight: 700; }
+.mode-card .mc-meta { display: flex; gap: 14px; margin: 10px 0; }
+.mode-card .mc-meta div { font-size: 10.5px; color: var(--ink-500); }
+.mode-card .mc-meta b { display: block; font-size: 13px; color: var(--ink-900); font-weight: 800; font-variant-numeric: tabular-nums; }
+.mode-card ul { margin: 8px 0 0; padding: 0; list-style: none; }
+.mode-card li { font-size: 11px; color: var(--ink-600); padding-left: 14px; position: relative; margin-bottom: 3px; line-height: 1.5; }
+.mode-card li.pro::before { content: '＋'; position: absolute; left: 0; color: var(--down); font-weight: 800; }
+.mode-card li.con::before { content: '－'; position: absolute; left: 0; color: var(--up); font-weight: 800; }
+
+/* ---------------- 风险矩阵 ---------------- */
+.risk-cell {
+  border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px;
+  background: #fff; border-left-width: 3px;
+}
+.risk-cell.high { border-left-color: var(--up); }
+.risk-cell.midhigh { border-left-color: var(--amber); }
+.risk-cell.mid { border-left-color: var(--blue); }
+.risk-cell .rc-n { font-size: 12.5px; font-weight: 800; color: var(--ink-900); display: flex; align-items: center; gap: 7px; }
+.risk-cell .rc-d { font-size: 11px; color: var(--ink-500); margin-top: 4px; line-height: 1.55; }
+.risk-cell .rc-m { display: flex; gap: 12px; margin-top: 7px; font-size: 10.5px; color: var(--ink-500); }
+.risk-cell .rc-m b { color: var(--ink-800); font-weight: 700; }
+
+.alert-card {
+  border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+  background: #fff;
+}
+.alert-card .ac-head {
+  padding: 10px 14px; display: flex; align-items: center; gap: 9px;
+  border-bottom: 1px solid var(--line);
+}
+.alert-card.red .ac-head { background: linear-gradient(90deg, #fdecee, #fff); }
+.alert-card.amber .ac-head { background: linear-gradient(90deg, #fdf3e3, #fff); }
+.alert-card.blue .ac-head { background: linear-gradient(90deg, #eaf1fb, #fff); }
+.alert-card .ac-l { font-size: 13px; font-weight: 800; color: var(--ink-900); }
+.alert-card .ac-w { font-size: 11px; font-family: var(--mono); font-weight: 700; margin-left: auto; }
+.alert-card.red .ac-w { color: var(--up); }
+.alert-card.amber .ac-w { color: var(--amber); }
+.alert-card.blue .ac-w { color: var(--blue); }
+.alert-card ul { margin: 0; padding: 11px 14px 12px 28px; }
+.alert-card li { font-size: 11.5px; color: var(--ink-600); margin-bottom: 5px; line-height: 1.6; }
+
+/* ---------------- 渠道矩阵 ---------------- */
+.chan-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 15px; border-bottom: 1px solid var(--ink-100);
+  transition: background .15s;
+}
+.chan-row:hover { background: var(--tea-50); }
+.chan-row:last-child { border-bottom: none; }
+.chan-type {
+  font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 5px;
+  width: 62px; text-align: center; flex: 0 0 62px;
+}
+.chan-plat { font-size: 13px; font-weight: 800; color: var(--ink-900); flex: 0 0 150px; }
+.chan-pos { font-size: 11px; color: var(--ink-500); flex: 0 0 110px; }
+.chan-str { font-size: 11.5px; color: var(--ink-600); flex: 1; }
+
+/* ---------------- 时间轴 ---------------- */
+.timeline { position: relative; padding-left: 26px; }
+.timeline::before {
+  content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px;
+  width: 2px; background: var(--ink-200);
+}
+.tl-item { position: relative; padding-bottom: 16px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item::before {
+  content: ''; position: absolute; left: -23px; top: 5px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #fff; border: 2.5px solid var(--ink-300);
+}
+.tl-item.done::before { background: var(--tea-600); border-color: var(--tea-600); }
+.tl-item.active::before {
+  background: #fff; border-color: var(--tea-600);
+  box-shadow: 0 0 0 4px rgba(42,169,123,.18);
+}
+.tl-time { font-family: var(--mono); font-size: 10.5px; color: var(--ink-400); font-weight: 700; }
+.tl-place { font-size: 12.5px; font-weight: 800; color: var(--ink-900); margin: 1px 0 2px; }
+.tl-act { font-size: 11.5px; color: var(--ink-600); line-height: 1.6; }
+.tl-temp {
+  font-family: var(--mono); font-size: 10px; color: var(--tea-700);
+  background: var(--tea-50); border: 1px solid var(--tea-100);
+  padding: 1px 7px; border-radius: 20px; display: inline-block; margin-top: 5px;
+}
+
+/* ---------------- 溯源 ---------------- */
+.code-card {
+  background: linear-gradient(160deg, var(--tea-900), var(--tea-700));
+  border-radius: var(--r); padding: 16px; color: #fff; position: relative; overflow: hidden;
+}
+.code-card::after {
+  content: ''; position: absolute; right: -30px; bottom: -40px;
+  width: 150px; height: 150px; border-radius: 50%;
+  background: rgba(127,212,179,.16);
+}
+.code-qr {
+  width: 108px; height: 108px; background: #fff; border-radius: 10px;
+  padding: 7px; display: grid; place-items: center; flex: 0 0 108px;
+  box-shadow: var(--sh-3);
+}
+.code-qr canvas { display: block; }
+.code-meta { position: relative; z-index: 2; }
+.code-meta .cm-t { font-size: 15px; font-weight: 800; letter-spacing: .3px; }
+.code-meta .cm-s { font-size: 10.5px; opacity: .74; margin-top: 3px; line-height: 1.6; }
+.code-hash {
+  font-family: var(--mono); font-size: 10px; opacity: .8;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16);
+  padding: 3px 8px; border-radius: 5px; display: inline-block; margin-top: 6px;
+}
+
+/* ---------------- 财务 ---------------- */
+.bar-chart { display: flex; align-items: flex-end; gap: 22px; height: 190px; padding: 10px 6px 0; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.bar-stack { width: 100%; max-width: 74px; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; gap: 3px; }
+.bar-seg {
+  width: 100%; border-radius: 5px 5px 0 0; position: relative;
+  display: grid; place-items: center; color: #fff; font-size: 10px; font-weight: 800;
+  transition: height .9s cubic-bezier(.22,.68,.36,1); min-height: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.bar-seg.rev { background: linear-gradient(180deg, #2f66b5, #234f8e); }
+.bar-seg.pro { background: linear-gradient(180deg, var(--down), #14724e); border-radius: 0 0 5px 5px; }
+.bar-lab { font-size: 11px; font-weight: 700; color: var(--ink-600); margin-top: 9px; text-align: center; }
+.bar-sub { font-size: 9.5px; color: var(--ink-400); text-align: center; margin-top: 1px; }
+
+.legend { display: flex; gap: 16px; align-items: center; font-size: 10.5px; color: var(--ink-500); }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 5px; vertical-align: -1px; }
+
+/* 堆叠成本条 */
+.cost-stack { display: flex; height: 40px; border-radius: var(--r-sm); overflow: hidden; box-shadow: var(--sh-1); }
+.cost-seg {
+  display: grid; place-items: center; color: #fff; font-size: 10.5px; font-weight: 800;
+  transition: flex .6s; cursor: pointer; position: relative;
+}
+.cost-seg:hover { filter: brightness(1.08); }
+.cost-legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 12px; }
+.cost-leg {
+  display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff;
+  font-size: 11px;
+}
+.cost-leg i { width: 11px; height: 11px; border-radius: 3px; flex: 0 0 11px; }
+.cost-leg .cl-n { font-weight: 700; color: var(--ink-700); }
+.cost-leg .cl-v { margin-left: auto; font-family: var(--mono); font-weight: 800; color: var(--ink-900); font-size: 11.5px; }
+
+/* ---------------- 条形对比 ---------------- */
+.cmp-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.cmp-lab { font-size: 11.5px; font-weight: 700; color: var(--ink-700); flex: 0 0 108px; }
+.cmp-track { flex: 1; height: 20px; background: var(--ink-100); border-radius: 5px; overflow: hidden; position: relative; }
+.cmp-fill {
+  height: 100%; border-radius: 5px; transition: width .8s cubic-bezier(.22,.68,.36,1);
+  display: flex; align-items: center; justify-content: flex-end; padding-right: 7px;
+  color: #fff; font-size: 10.5px; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.cmp-val { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--ink-600); flex: 0 0 74px; text-align: right; }
+
+/* ---------------- 支柱 ---------------- */
+.pillar {
+  border: 1px solid var(--line); border-radius: var(--r); background: #fff;
+  padding: 13px; text-align: center; transition: all .2s;
+}
+.pillar:hover { border-color: var(--tea-300); box-shadow: var(--sh-2); transform: translateY(-2px); }
+.pillar .p-ico { font-size: 20px; margin-bottom: 6px; }
+.pillar .p-t { font-size: 12.5px; font-weight: 800; color: var(--ink-900); }
+.pillar .p-d { font-size: 10.5px; color: var(--ink-400); margin-top: 2px; }
+
+/* ---------------- 时间轴阶段（里程碑） ---------------- */
+.ms-row {
+  display: flex; align-items: stretch; border: 1px solid var(--line);
+  border-radius: var(--r); background: #fff; overflow: hidden;
+  margin-bottom: 10px; transition: all .2s;
+}
+.ms-row:hover { box-shadow: var(--sh-2); border-color: var(--tea-300); }
+.ms-no {
+  flex: 0 0 58px; display: grid; place-items: center;
+  background: linear-gradient(170deg, var(--tea-700), var(--tea-900));
+  color: #fff; font-family: var(--mono); font-size: 17px; font-weight: 800;
+}
+.ms-main { flex: 1; padding: 11px 14px; }
+.ms-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.ms-name { font-size: 13.5px; font-weight: 800; color: var(--ink-900); }
+.ms-time { font-family: var(--mono); font-size: 10.5px; color: var(--tea-700); font-weight: 700; background: var(--tea-50); padding: 2px 8px; border-radius: 20px; }
+.ms-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ms-cols .mc-t { font-size: 9.5px; font-weight: 800; color: var(--ink-400); letter-spacing: .7px; margin-bottom: 3px; }
+.ms-cols li { font-size: 11px; color: var(--ink-600); line-height: 1.6; }
+
+/* ---------------- 吐司 / 提示 ---------------- */
+.toast {
+  position: fixed; right: 22px; bottom: 22px; z-index: 200;
+  background: var(--ink-900); color: #fff; padding: 11px 16px;
+  border-radius: var(--r); font-size: 12px; font-weight: 600;
+  box-shadow: var(--sh-4); display: flex; align-items: center; gap: 9px;
+  opacity: 0; transform: translateY(14px); transition: all .3s;
+  pointer-events: none; max-width: 380px;
+}
+.toast.show { opacity: 1; transform: none; }
+.toast .t-ico { font-size: 15px; }
+
+/* ---------------- 空状态 / 加载 ---------------- */
+.spin {
+  width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite;
+}
+.spin.dark { border-color: var(--ink-200); border-top-color: var(--tea-600); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.blink { animation: blink 1.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.28} }
+
+/* ---------------- 滚动条 ---------------- */
+.stage::-webkit-scrollbar, .rail::-webkit-scrollbar, .scroll-y::-webkit-scrollbar { width: 9px; height: 9px; }
+.stage::-webkit-scrollbar-thumb, .rail::-webkit-scrollbar-thumb, .scroll-y::-webkit-scrollbar-thumb {
+  background: var(--ink-300); border-radius: 20px; border: 2px solid transparent; background-clip: padding-box;
+}
+.stage::-webkit-scrollbar-thumb:hover, .rail::-webkit-scrollbar-thumb:hover { background: var(--ink-400); background-clip: padding-box; }
+.scroll-y { overflow-y: auto; }
+
+/* ---------------- 工具类 ---------------- */
+.flex { display: flex; } .aic { align-items: center; } .jcb { justify-content: space-between; }
+.gap4{gap:4px}.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}.gap14{gap:14px}.gap16{gap:16px}
+.mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt10{margin-top:10px}.mt12{margin-top:12px}
+.mt14{margin-top:14px}.mt16{margin-top:16px}.mt18{margin-top:18px}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}
+.tc { text-align: center; } .tr { text-align: right; }
+.mono { font-family: var(--mono); }
+.muted { color: var(--ink-400); } .dim { color: var(--ink-500); }
+.b7 { font-weight: 700; } .b8 { font-weight: 800; }
+.f10{font-size:10px}.f11{font-size:11px}.f12{font-size:12px}.f13{font-size:13px}
+.up { color: var(--up); } .down { color: var(--down); }
+.hide { display: none !important; }
+
+/* ---------------- 数据高亮动效 ---------------- */
+.count-flash { animation: countFlash .55s ease; }
+@keyframes countFlash { 0%{ color: var(--tea-600); transform: scale(1.06) } 100%{ color: inherit; transform: none } }
+
+.row-in { animation: rowIn .34s ease backwards; }
+@keyframes rowIn { from { opacity: 0; transform: translateX(-8px) } to { opacity: 1; transform: none } }
+
+/* ---------------- 覆盖层（演示录制用光标提示） ---------------- */
+#cursor {
+  position: fixed; z-index: 9999; width: 22px; height: 22px;
+  pointer-events: none; opacity: 0; transition: opacity .2s;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.35));
+}
+#cursor.on { opacity: 1; }
+#cursor::before {
+  content: ''; position: absolute; inset: 0;
+  background: #fff; clip-path: polygon(0 0, 0 72%, 26% 55%, 42% 100%, 56% 92%, 40% 48%, 100% 46%);
+  border-radius: 2px;
+}
+#click-ring {
+  position: fixed; z-index: 9998; width: 40px; height: 40px;
+  margin: -20px 0 0 -20px; border-radius: 50%;
+  border: 2.5px solid var(--tea-500); pointer-events: none; opacity: 0;
+}
+#click-ring.go { animation: clickRing .55s ease-out; }
+@keyframes clickRing {
+  0% { opacity: .95; transform: scale(.28); }
+  100% { opacity: 0; transform: scale(1.55); }
+}
+
+/* ---------------- 目标高亮 ---------------- */
+.hl-target {
+  position: relative;
+  box-shadow: 0 0 0 3px rgba(42,169,123,.34), 0 0 0 8px rgba(42,169,123,.11) !important;
+  border-radius: var(--r);
+  transition: box-shadow .3s;
+}
+
+
+/* ============================================================
+ * 09 渠道与实施作战台
+ * ============================================================ */
+
+/* 渠道流转条 */
+.flow-strip { display: flex; align-items: center; gap: 10px; }
+.fs-node {
+  flex: 1; border-radius: var(--r); padding: 12px 14px;
+  background: var(--ink-50); border: 1px solid var(--line);
+  border-left: 3px solid var(--ink-300);
+}
+.fs-node.red   { border-left-color: var(--up);    background: #fdf3f4; }
+.fs-node.blue  { border-left-color: var(--blue);  background: #f3f7fd; }
+.fs-node.green { border-left-color: var(--tea-600); background: var(--tea-50); }
+.fs-t { font-size: 12.5px; font-weight: 700; color: var(--ink-900); }
+.fs-s { font-size: 10.5px; color: var(--ink-500); margin-top: 3px; }
+.fs-arrow { flex: 0 0 auto; color: var(--ink-300); font-size: 15px; font-weight: 700; }
+
+/* 甘特图 */
+#gantt { font-size: 11px; }
+.g-axis { display: flex; align-items: flex-end; margin-bottom: 6px; }
+.g-axis .g-label { flex: 0 0 132px; }
+.g-ticks { flex: 1; display: flex; }
+.g-tick {
+  flex: 1; text-align: center; font-size: 9.5px; color: var(--ink-400);
+  padding-bottom: 4px; border-bottom: 1px solid var(--line); line-height: 1.25;
+}
+.g-tick-major { color: var(--ink-700); font-weight: 700; border-bottom-color: var(--line-strong); }
+.g-row { display: flex; align-items: center; margin-bottom: 5px; }
+.g-label {
+  flex: 0 0 132px; font-size: 11px; color: var(--ink-700);
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;
+}
+.g-ph { width: 3px; height: 13px; border-radius: 2px; flex: 0 0 3px; display: inline-block; }
+.g-track {
+  flex: 1; position: relative; height: 20px;
+  background: repeating-linear-gradient(90deg, var(--ink-100) 0, var(--ink-100) calc(6.25% - 1px), transparent calc(6.25% - 1px), transparent 6.25%);
+  border-radius: 5px;
+}
+.g-bar {
+  position: absolute; top: 0; height: 20px; border-radius: 5px;
+  color: #fff; font-size: 9.5px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  white-space: nowrap; overflow: hidden;
+}
+
+/* 顶栏外链按钮（发布版） */
+.tb-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 28px; padding: 0 11px; border-radius: 14px;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.26);
+  color: #fff; font-size: 11.5px; font-weight: 700;
+  text-decoration: none; letter-spacing: .2px;
+  transition: background .18s, border-color .18s;
+}
+.tb-btn:hover { background: rgba(255,255,255,.26); border-color: rgba(255,255,255,.44); }
+.tb-btn.is-off { opacity: .55; cursor: not-allowed; }
+
+</style>
+</head>
+<body>
+
+<!-- 演示光标（自动演示 / 录屏时显示） -->
+<svg id="cursor" viewBox="0 0 24 24"><path d="M2 1 L2 18 L6.6 13.6 L9.8 21 L13 19.6 L9.8 12.4 L16.4 12.2 Z" fill="#fff" stroke="#1c2733" stroke-width="1.2" stroke-linejoin="round"/></svg>
+<div id="click-ring"></div>
+
+<div id="app">
+
+  <!-- ============ 顶栏 ============ -->
+  <header class="topbar">
+    <div class="tb-brand">
+      <div class="tb-logo">🍃</div>
+      <div>
+        <div class="tb-title">黔货出海 · 都匀毛尖跨境履约平台</div>
+        <div class="tb-sub">Duyun Maojian Cross-border Fulfillment Console</div>
+      </div>
+    </div>
+    <div class="tb-tag">AI 合规引擎 · 双认证溯源 · 智能物流调度</div>
+    <div class="tb-spacer"></div>
+    <a id="lnk-video" class="tb-btn" href="#" target="_blank" rel="noopener">▶ 演示视频</a>
+    <a id="lnk-station" class="tb-btn" href="station/index.html" target="_blank" rel="noopener">◫ 视频工作站</a>
+    <div class="tb-status"><span class="tb-dot"></span><span id="sys-state">系统运行正常</span></div>
+    <div class="tb-clock" id="clock">--:--:--</div>
+  </header>
+
+  <div class="body">
+
+    <!-- ============ 左侧导航 ============ -->
+    <nav class="rail" id="rail">
+      <div class="rail-label">业务总览</div>
+      <div class="nav-item active" data-view="dashboard"><span class="nav-ico">◫</span><span>项目驾驶舱</span><span class="nav-num">01</span></div>
+      <div class="nav-item" data-view="pain"><span class="nav-ico">⚠</span><span>痛点与市场机会</span><span class="nav-num">02</span></div>
+
+      <div class="rail-label">三大核心引擎</div>
+      <div class="nav-item" data-view="compliance"><span class="nav-ico">🛡</span><span>AI 智能合规引擎</span><span class="nav-num">03</span></div>
+      <div class="nav-item" data-view="trace"><span class="nav-ico">⛓</span><span>溯源 · 碳足迹双认证</span><span class="nav-num">04</span></div>
+      <div class="nav-item" data-view="logistics"><span class="nav-ico">🚚</span><span>智能物流调度</span><span class="nav-num">05</span></div>
+
+      <div class="rail-label">履约与经营</div>
+      <div class="nav-item" data-view="fulfillment"><span class="nav-ico">⇄</span><span>八步履约闭环</span><span class="nav-num">06</span></div>
+      <div class="nav-item" data-view="decision"><span class="nav-ico">◱</span><span>物流选型与成本</span><span class="nav-num">07</span></div>
+      <div class="nav-item" data-view="business"><span class="nav-ico">◈</span><span>商业与财务测算</span><span class="nav-num">08</span></div>
+      <div class="nav-item" data-view="channel"><span class="nav-ico">◐</span><span>渠道与实施作战台</span><span class="nav-num">09</span></div>
+
+      <div class="rail-foot">
+        <b>黔南民族师范学院</b>
+        数智乡村振兴现代产业学院<br>
+        命题企业：北京京东乾石科技有限公司<br>
+        <span style="color:var(--ink-300)">中国国际大学生创新创业大赛 2026</span>
+      </div>
+    </nav>
+
+    <!-- ============ 内容区 ============ -->
+    <main class="stage" id="stage">
+
+      <!-- ========== 01 项目驾驶舱 ========== -->
+      <section class="view active" id="view-dashboard">
+        <div class="page-head">
+          <h1>项目驾驶舱 <span class="badge">一页看懂</span></h1>
+          <p>以马来西亚为首站市场，构建「AI 合规引擎 + 区块链双认证溯源 + 智能物流调度」的端到端跨境履约体系。</p>
+        </div>
+
+        <div class="grid g4" id="kpi-row"></div>
+
+        <div class="grid g-2-1 mt14">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>端到端履约价值主线</h3>
+              <span class="sub">从茶园到东盟消费者</span>
+              <div class="right"><span class="tag teal">核心闭环</span></div>
+            </div>
+            <div class="panel-body">
+              <div id="value-chain"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>产业基础</h3>
+              <span class="sub">都匀毛尖出海底盘</span>
+            </div>
+            <div class="panel-body tight">
+              <table class="tbl" id="base-tbl"></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g3 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>三大技术创新</h3><div class="right"><span class="tag teal">技术底座</span></div></div>
+            <div class="panel-body" id="innov-cards"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>核心量化指标</h3><span class="sub">合规与物流效能</span></div>
+            <div class="panel-body" id="core-metrics"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>四大核心支柱</h3><span class="sub">品牌出海战略</span></div>
+            <div class="panel-body">
+              <div class="grid g2 gap10" id="pillars"></div>
+              <div class="mt14" style="border-top:1px solid var(--line);padding-top:12px">
+                <div class="f10 muted b7 mb8" style="letter-spacing:.7px">东盟拓展三步走</div>
+                <div id="expansion"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel mt14">
+          <div class="panel-head">
+            <h3>东盟市场机会</h3>
+            <span class="sub">45 亿美元规模 · RCEP 零关税红利</span>
+            <div class="right"><span class="tag amber">首站：马来西亚</span></div>
+          </div>
+          <div class="panel-body">
+            <div class="stat-row" id="asean-stats"></div>
+            <div class="mt14" id="market-bars"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 02 痛点与市场机会 ========== -->
+      <section class="view" id="view-pain">
+        <div class="page-head">
+          <h1>痛点与市场机会 <span class="badge">为什么需要这套方案</span></h1>
+          <p>中小茶企独立出海面临六重结构性痛点；三重政策叠加与东盟市场扩容，共同构成出海的时间窗口。</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>六重痛点：中小茶企为何难以独立出海</h3>
+            <span class="sub">项目组实地调研 · 行业专家访谈 · 黔南州出口统计</span>
+          </div>
+          <div class="panel-body">
+            <div class="grid g3 gap12" id="pain-grid"></div>
+          </div>
+        </div>
+
+        <div class="grid g3 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>国家层面 · 战略定调</h3></div>
+            <div class="panel-body">
+              <div class="f12 dim" style="line-height:1.8">工信部等六部门将茶叶列入历史经典产业重点扶持，明确支持开展碳足迹核算，并依托 RCEP 搭建出海平台。</div>
+              <div class="mt10 f10 muted">来源：六部门联合意见（2026.8）</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>地方层面 · 目标引领</h3></div>
+            <div class="panel-body">
+              <div class="f12 dim" style="line-height:1.8">《黔南州"十五五"规划》锚定 2030 年综合产值突破 200 亿元，都匀毛尖品牌价值突破 65 亿元。</div>
+              <div class="mt10 f10 muted">来源：黔南州茶产业高质量发展规划</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>校企层面 · 资源赋能</h3></div>
+            <div class="panel-body">
+              <div class="f12 dim" style="line-height:1.8">依托京东跨境电商资源与产业创新大赛，以"企业命题—学校解题—产业落地"模式破解出海难题。</div>
+              <div class="mt10 f10 muted">来源：2026 产业创新大赛赛道</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g-32 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>为什么是马来西亚：支付意愿最强</h3><div class="right"><span class="tag red">首站市场</span></div></div>
+            <div class="panel-body">
+              <div class="grid g3 gap12" id="my-reasons"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>RCEP 关税对比</h3><span class="sub">按 50 元货值测算</span></div>
+            <div class="panel-body tight">
+              <table class="tbl" id="tariff-tbl"></table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 03 AI 智能合规引擎 ========== -->
+      <section class="view" id="view-compliance">
+        <div class="page-head">
+          <h1>AI 智能合规引擎 <span class="badge">创新一 · 3—5 天 → 30 分钟</span></h1>
+          <p>基于大语言模型微调与 RAG 检索增强，整合东盟六国进口法规知识库，自动完成法规比对、风险标注与全套清关单据生成。</p>
+        </div>
+
+        <div class="engine-bar">
+          <div>
+            <div class="eb-t">🛡 东盟六国法规动态知识库</div>
+            <div class="eb-d">LLM 微调 + RAG 检索增强 · 技术 + 人工双重保障 · RCEP 原产地规则嵌入</div>
+          </div>
+          <div class="engine-chips">
+            <span class="engine-chip">法规条款 1,284 条</span>
+            <span class="engine-chip">判定准确率 99.2%</span>
+            <span class="engine-chip">更新订阅 实时</span>
+          </div>
+          <div class="eb-sp"></div>
+          <button class="btn amber" id="btn-audit">▶ 启动智能合规预审</button>
+        </div>
+
+        <div class="grid g-1-2 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>法规知识库</h3><span class="sub">东盟六国</span></div>
+            <div class="panel-body tight" id="reg-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>智能审核过程</h3>
+              <span class="sub" id="audit-sku">标的：都匀毛尖特级 50g → 马来西亚</span>
+              <div class="right"><span class="tag slate" id="audit-clock">待启动</span></div>
+            </div>
+            <div class="audit-progress">
+              <span class="ap-t">法规条款比对进度</span>
+              <div class="ap-meter"><div class="meter slim"><i id="audit-meter" style="width:0%"></i></div></div>
+              <span class="ap-v" id="audit-pct">0 / 42</span>
+            </div>
+            <div class="panel-body tight">
+              <table class="tbl" id="audit-tbl">
+                <thead><tr><th>法规条款</th><th>检查项</th><th>标准要求</th><th>实测值</th><th>判定</th></tr></thead>
+                <tbody id="audit-tbody">
+                  <tr><td colspan="5" class="tc muted" style="padding:26px">点击右上角「启动智能合规预审」，开始自动法规比对</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g2 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>自动化清关单据生成</h3><span class="sub">一键输出全套清关资料</span></div>
+            <div class="panel-body">
+              <div class="doc-flow" id="doc-flow"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>引擎价值测算</h3><span class="sub">三年累计节约超 60 万元</span></div>
+            <div class="panel-body">
+              <div class="grid g2 gap12" id="engine-metrics"></div>
+              <div class="mt14" style="border-top:1px solid var(--line);padding-top:12px">
+                <div class="f11 dim" style="line-height:1.8">
+                  跨境电商行业因合规疏漏导致的扣货、退运、罚款平均损失约占订单金额的 <b class="up">8%—12%</b>；人工合规审核成本约每单 <b>35 元</b>。
+                  经测算，AI 引擎每年可节约合规人力成本约 <b class="down">10 万元</b>、降低扣货损失约 <b class="down">18 万元</b>。
+                </div>
+              </div>
+              <div class="mt14">
+                <div class="f10 muted b7 mb8" style="letter-spacing:.7px">马来西亚合规标签检查清单</div>
+                <div class="grid g2 gap6" id="checklist"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 04 溯源 · 碳足迹双认证 ========== -->
+      <section class="view" id="view-trace">
+        <div class="page-head">
+          <h1>区块链溯源 · 碳足迹双认证 <span class="badge">创新二 · 一物一码</span></h1>
+          <p>国内质量追溯、跨境物流追溯与生命周期碳足迹核算三链合一，批次级细化，消费者扫码即可核验产地工艺、质检报告与碳数据。</p>
+        </div>
+
+        <div class="grid g-1-2">
+          <div>
+            <div class="code-card">
+              <div class="flex gap14 aic">
+                <div class="code-qr"><canvas id="qr" width="188" height="188" style="width:94px;height:94px"></canvas></div>
+                <div class="code-meta">
+                  <div class="cm-t">一物一码 · 双码核验</div>
+                  <div class="cm-s">地理标志溯源码 + 碳足迹码<br>批次号 DYMJ-2027-0425 · 特级 50g</div>
+                  <div class="code-hash">GEO-MY-0416 · 上链高度 4,182,377</div>
+                </div>
+              </div>
+              <div class="mt14" style="position:relative;z-index:2">
+                <div class="flex jcb aic" style="font-size:10.5px;opacity:.8">
+                  <span>贵州茶产业溯源平台</span>
+                  <span class="b7" id="trace-count">0 / 7 节点已存证</span>
+                </div>
+                <div class="meter slim mt6" style="background:rgba(255,255,255,.16)">
+                  <i id="trace-meter" style="width:0%;background:linear-gradient(90deg,#7fd4b3,#fff)"></i>
+                </div>
+                <button class="btn ghost mt12" id="btn-trace" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28);color:#fff">▶ 演示全链路上链存证</button>
+              </div>
+            </div>
+
+            <div class="panel mt14">
+              <div class="panel-head"><h3>碳足迹核算</h3><span class="sub">批次级 · 四环节</span></div>
+              <div class="panel-body">
+                <div class="flex aic gap14">
+                  <div class="ring" style="width:86px;height:86px">
+                    <svg width="86" height="86">
+                      <circle class="bg" cx="43" cy="43" r="36" stroke-width="8"></circle>
+                      <circle class="fg" cx="43" cy="43" r="36" stroke-width="8"
+                              stroke-dasharray="226.2" stroke-dashoffset="226.2" id="carbon-ring"></circle>
+                    </svg>
+                    <div class="val"><span id="carbon-val">0.46</span></div>
+                  </div>
+                  <div style="flex:1">
+                    <div class="f11 muted">单件碳足迹（50g）</div>
+                    <div class="f13 b8" style="color:var(--ink-900)" id="carbon-unit">kgCO₂e / 50g</div>
+                    <div class="mt8" id="carbon-bars"></div>
+                  </div>
+                </div>
+                <div class="mt12 f10 muted" style="border-top:1px solid var(--line);padding-top:9px">
+                  核算标准：<b class="dim">GB/T 24067-2024 · ISO 14067:2018</b>　<span class="down b7">较行业均值低 18.6%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>全链路存证记录</h3>
+              <span class="sub">国内质量追溯 + 跨境物流追溯一体化证据链</span>
+              <div class="right"><span class="tag teal">不可篡改 · 可审计</span></div>
+            </div>
+            <div class="panel-body tight">
+              <table class="tbl" id="trace-tbl">
+                <thead><tr><th style="width:96px">环节</th><th>存证内容</th><th style="width:104px">时间</th><th style="width:120px">区块哈希</th><th style="width:104px">存证主体</th></tr></thead>
+                <tbody id="trace-tbody">
+                  <tr><td colspan="5" class="tc muted" style="padding:26px">点击左侧「演示全链路上链存证」，逐节点写入区块链</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="panel-body">
+              <div class="grid g3 gap10">
+                <div class="sd-box"><div class="bt">追溯范围</div><div class="sy f12 dim">投入品管控 · 鲜叶采摘 · 初精制加工 · 成品质检</div></div>
+                <div class="sd-box"><div class="bt">跨境环节</div><div class="f12 dim">出库 WMS · 边境仓周转 · 温湿度传感 · 海空运输 · 海外仓接收</div></div>
+                <div class="sd-box"><div class="bt">平台对接</div><div class="f12 dim">覆盖 <b class="down">76.3%</b> 茶园面积的贵州茶产业溯源平台</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 05 智能物流调度 ========== -->
+      <section class="view" id="view-logistics">
+        <div class="page-head">
+          <h1>智能物流调度系统 <span class="badge">创新三 · 三张网 + 三级仓</span></h1>
+          <p>以京东物流仓网、末端配送网、航空网三张网为运力底座，构建三级仓网络与海陆空双通道，实现预测—调度—跟踪—应急闭环。</p>
+        </div>
+
+        <div class="grid g3 gap12">
+          <div class="panel">
+            <div class="panel-head"><h3>全域协同 · 三张网</h3><div class="right"><span class="tag blue">京东资源</span></div></div>
+            <div class="panel-body">
+              <div class="grid g3 gap8">
+                <div class="pillar" style="padding:11px 6px"><div class="p-ico">🏭</div><div class="p-t f11">物流仓网</div><div class="p-d f10">全球 25 国</div></div>
+                <div class="pillar" style="padding:11px 6px"><div class="p-ico">🛵</div><div class="p-t f11">末端配送网</div><div class="p-d f10">JoyExpress</div></div>
+                <div class="pillar" style="padding:11px 6px"><div class="p-ico">✈</div><div class="p-t f11">航空网</div><div class="p-d f10">空运快线</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>三级仓高效流转</h3><div class="right"><span class="tag teal">核心路径</span></div></div>
+            <div class="panel-body"><div id="warehouse-chain"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>闭环价值</h3><div class="right"><span class="tag amber">≤ 2 小时</span></div></div>
+            <div class="panel-body">
+              <div class="f12 dim" style="line-height:1.85">构建「预测—调度—履约—应急」的智能物流闭环，打破跨境物流信息孤岛，实现从产地到终端的全流程可控，大幅提升物流时效与服务稳定性。</div>
+              <div class="grid g2 gap10 mt12">
+                <div class="sd-box"><div class="bt">节点可视化率</div><div class="b8 f13 down">100%</div></div>
+                <div class="sd-box"><div class="bt">异常响应</div><div class="b8 f13 down">≤ 2 小时</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g-1-2 mt14">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>在途运单</h3>
+              <span class="sub mono f10" id="ship-order">JD-MY-2027-0418-7735</span>
+              <div class="right"><span class="tag green">在途</span></div>
+            </div>
+            <div class="panel-body">
+              <div class="grid g2 gap10">
+                <div class="sd-box"><div class="bt">商品</div><div class="f12 dim">都匀毛尖特级 50g × 200 件</div></div>
+                <div class="sd-box"><div class="bt">运输方式</div><div class="f12 dim">海运干线 · 边境仓模式</div></div>
+                <div class="sd-box"><div class="bt">起运地</div><div class="f12 dim">贵州 · 都匀产地揽收仓</div></div>
+                <div class="sd-box"><div class="bt">目的地</div><div class="f12 dim">马来西亚 · 吉隆坡分拨仓</div></div>
+              </div>
+              <div class="mt14" style="border-top:1px solid var(--line);padding-top:12px">
+                <div class="f10 muted b7 mb8" style="letter-spacing:.7px">在途温湿度实时监控</div>
+                <div class="grid g3 gap8">
+                  <div class="sd-box"><div class="bt">当前温度</div><div class="b8 f13 down" id="m-temp">19.1 ℃</div></div>
+                  <div class="sd-box"><div class="bt">当前湿度</div><div class="b8 f13 down" id="m-hum">65 %</div></div>
+                  <div class="sd-box"><div class="bt">预计到达</div><div class="b8 f13" id="m-eta">2027-04-26</div></div>
+                </div>
+                <div class="mt12">
+                  <div class="flex jcb f10 muted mb8"><span>海运在途进度</span><span class="mono b7" id="ship-pct">52%</span></div>
+                  <div class="meter"><i id="ship-meter" style="width:52%"></i></div>
+                </div>
+              </div>
+              <div class="mt14">
+                <div class="f10 muted b7 mb8" style="letter-spacing:.7px">调度闭环</div>
+                <div class="grid g5 gap6" id="loop-chips"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>物流轨迹与异常防控</h3>
+              <span class="sub">区块链运单 · 温湿度上链</span>
+              <div class="right"><span class="tag slate" id="ship-state">在途</span></div>
+            </div>
+            <div class="panel-body scroll-y" style="max-height:430px">
+              <div class="grid g-2-1">
+                <div class="timeline" id="ship-timeline"></div>
+                <div>
+                  <div class="f10 muted b7 mb8" style="letter-spacing:.7px">异常防控模块</div>
+                  <div id="exception-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 06 八步履约闭环 ========== -->
+      <section class="view" id="view-fulfillment">
+        <div class="page-head">
+          <h1>八步履约闭环 <span class="badge">从订单到签收</span></h1>
+          <p>以订单接入、AI 合规预审、产地备货、入境边仓、跨境干线、口岸清关、末端配送、签收售后八个环节为主线，数据回流形成完整闭环。</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>履约全流程</h3>
+            <span class="sub">点击任一环节查看详情</span>
+            <div class="right">
+              <button class="btn ghost sm" id="btn-flow-prev">‹ 上一步</button>
+              <button class="btn sm" id="btn-flow-play">▶ 自动演示全流程</button>
+              <button class="btn ghost sm" id="btn-flow-next">下一步 ›</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="flow-track"><div class="flow-steps" id="flow-steps"></div></div>
+            <div class="step-detail" id="step-detail"></div>
+          </div>
+        </div>
+
+        <div class="grid g2 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>清关三段并行提速</h3><span class="sub">3—5 日 → 1—2 日</span></div>
+            <div class="panel-body">
+              <div class="grid g3 gap10">
+                <div class="sd-box"><div class="bt">① 发运前</div><div class="f11 dim">合规预审 · 单据生成 · 原产地声明草稿</div></div>
+                <div class="sd-box"><div class="bt">② 抵港前</div><div class="f11 dim">提前申报 · 关税保证金提交</div></div>
+                <div class="sd-box"><div class="bt">③ 抵港后</div><div class="f11 dim">单证核验 · 税费缴纳 · 简化通道放行</div></div>
+              </div>
+              <div class="grid g3 gap10 mt12">
+                <div class="sd-box"><div class="bt">清关一次通过率</div><div class="b8 f13 down">≥ 98%</div></div>
+                <div class="sd-box"><div class="bt">通关周期</div><div class="b8 f13 down">1—2 日</div></div>
+                <div class="sd-box"><div class="bt">RCEP 优惠税率</div><div class="b8 f13 down">0%</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>数据回流 · 智能闭环赋能</h3><div class="right"><span class="tag violet">正向循环</span></div></div>
+            <div class="panel-body">
+              <div class="f12 dim" style="line-height:1.85">全链路履约数据（销售、物流、清关、售后）实时回流，反哺 AI 合规引擎迭代与选品策略优化，实现"数据驱动决策、履约持续升级"的正向循环。</div>
+              <div class="grid g4 gap8 mt14" id="data-loop"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 07 物流选型与成本 ========== -->
+      <section class="view" id="view-decision">
+        <div class="page-head">
+          <h1>物流选型与成本测算 <span class="badge">量化决策依据</span></h1>
+          <p>物流模式选择本质是「库存成本、时效成本、合规成本、资金占用」四维权衡的动态决策。边境仓综合得分最高，推荐「边境仓为主、海外仓为辅」按销量阶段动态切换。</p>
+        </div>
+
+        <div class="grid g3 gap12" id="mode-cards"></div>
+
+        <div class="grid g-32 mt14">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>物流模式量化比较评分表</h3>
+              <span class="sub">九项指标加权 · 满分 100</span>
+              <div class="right">
+                <div class="legend">
+                  <span><i style="background:#93a1ad"></i>国际直邮</span>
+                  <span><i style="background:#d98218"></i>海外仓</span>
+                  <span><i style="background:#1f8a64"></i>边境仓</span>
+                </div>
+              </div>
+            </div>
+            <div class="panel-body tight">
+              <table class="tbl" id="score-tbl"></table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>加权总分对比</h3></div>
+            <div class="panel-body" id="score-bars"></div>
+          </div>
+        </div>
+
+        <div class="grid g-1-2 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>分阶段动态切换策略</h3><span class="sub">试错 → 规模化</span></div>
+            <div class="panel-body">
+              <div id="phase-switch"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>不同物流模式成本对比</h3>
+              <span class="sub">标的：50g 都匀毛尖特级 → 吉隆坡</span>
+            </div>
+            <div class="panel-body tight">
+              <table class="tbl" id="mode-cost-tbl"></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel mt14">
+          <div class="panel-head">
+            <h3>单件成本拆解：100 元构成</h3>
+            <span class="sub">边境仓模式 · 50g 都匀毛尖特级</span>
+            <div class="right"><span class="tag teal">核心价值：较直邮单件省 14 元</span></div>
+          </div>
+          <div class="panel-body">
+            <div class="cost-stack" id="cost-stack"></div>
+            <div class="cost-legend" id="cost-legend"></div>
+            <div class="grid g3 gap10 mt14" id="cost-detail"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 08 商业与财务测算 ========== -->
+      <section class="view" id="view-business">
+        <div class="page-head">
+          <h1>商业与财务测算 <span class="badge">投入 100 万 · 1.5 年回本</span></h1>
+          <p>轻资产运营 + 平台协同 + 产教融合；三年销售收入 500 → 1200 → 2500 万元，累计净利润 1150 万元，IRR 约 85%。</p>
+        </div>
+
+        <div class="grid g4" id="invest-row"></div>
+
+        <div class="grid g-32 mt14">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>三年财务预测</h3>
+              <span class="sub">收入 / 净利润（万元）</span>
+              <div class="right">
+                <div class="legend">
+                  <span><i style="background:#2f66b5"></i>销售收入</span>
+                  <span><i style="background:#1a9c6b"></i>净利润</span>
+                </div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="bar-chart" id="fin-chart"></div>
+              <table class="tbl mt14" id="fin-tbl"></table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>启动资金分配</h3><span class="sub">总计 100 万元</span></div>
+            <div class="panel-body" id="capital-bars"></div>
+          </div>
+        </div>
+
+        <div class="grid g3 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>盈亏平衡与安全边际</h3></div>
+            <div class="panel-body">
+              <div class="grid g2 gap10">
+                <div class="sd-box"><div class="bt">盈亏平衡点</div><div class="b8 f13 up" id="be-point">1.37 万单/年</div></div>
+                <div class="sd-box"><div class="bt">第 1 年规划销量</div><div class="b8 f13" id="be-plan">4.16 万单</div></div>
+                <div class="sd-box"><div class="bt">安全边际率</div><div class="b8 f13 down" id="be-safety">≈ 67%</div></div>
+                <div class="sd-box"><div class="bt">加权平均客单价</div><div class="b8 f13" id="be-price">120 元</div></div>
+              </div>
+              <div class="mt12 f10 muted" style="line-height:1.75">按加权平均客单价 120 元、单位变动成本 69 元测算，平衡点远低于第 1 年规划销量，经营安全系数极高。</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>战略支柱</h3></div>
+            <div class="panel-body">
+              <div class="grid g2 gap10" id="pillars2"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>渠道矩阵 · 一主两辅一基</h3><span class="sub">京东三层协同</span></div>
+            <div class="panel-body tight" id="channel-list"></div>
+          </div>
+        </div>
+
+        <div class="panel mt14">
+          <div class="panel-head"><h3>商业模式画布</h3><span class="sub">轻资产运营 + 平台协同 + 产教融合</span></div>
+          <div class="panel-body"><div class="grid g3 gap12" id="canvas-grid"></div></div>
+        </div>
+
+        <div class="panel mt14">
+          <div class="panel-head">
+            <h3>六大风险 + 三级预警响应机制</h3>
+            <span class="sub">概率—影响二维评估 · 全链条可控</span>
+          </div>
+          <div class="panel-body">
+            <div class="grid g3 gap12" id="risk-grid"></div>
+            <div class="grid g3 gap12 mt14" id="alert-grid"></div>
+          </div>
+        </div>
+
+        <div class="panel mt14">
+          <div class="panel-head"><h3>四阶段实施里程碑</h3><span class="sub">2027 年 9 月开启正式运营</span></div>
+          <div class="panel-body" id="ms-list"></div>
+        </div>
+      </section>
+
+      <!-- ========== 09 渠道与实施作战台 ========== -->
+      <section class="view" id="view-channel">
+        <div class="page-head">
+          <h1>渠道与实施作战台 <span class="badge">一主两辅一基 · 四阶段推进</span></h1>
+          <p>多平台协同遵循「内容平台种草 — 货架平台承接 — 自有平台沉淀」逻辑，形成「一品多店、一盘库存、统一履约」格局；四阶段里程碑将 12 项关键任务细化到岗到月。</p>
+        </div>
+
+        <div class="grid g4" id="chan-kpi-row"></div>
+
+        <div class="panel mt14">
+          <div class="panel-head"><h3>渠道矩阵 · 一主两辅一基</h3><span class="sub">四类渠道定位与核心策略</span></div>
+          <div class="panel-body">
+            <div class="grid g4 gap12" id="chan-cards"></div>
+            <div class="flow-strip mt14" id="chan-flow"></div>
+          </div>
+        </div>
+
+        <div class="grid g-2-1 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>京东跨境电商资源协同</h3><span class="sub">物流 / 商流 / 技术 三层支撑</span></div>
+            <div class="panel-body"><div class="grid g3 gap12" id="jd-grid"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>协同运营格局</h3><span class="sub">一品多店 · 一盘库存 · 统一履约</span></div>
+            <div class="panel-body" id="synergy-box"></div>
+          </div>
+        </div>
+
+        <div class="panel mt14">
+          <div class="panel-head">
+            <h3>项目实施甘特图</h3>
+            <span class="sub">2026.09 — 2027.12 · 16 个月</span>
+            <div class="right">
+              <div class="legend">
+                <span><i style="background:#7F77DD"></i>筹备期</span>
+                <span><i style="background:#378ADD"></i>开发期</span>
+                <span><i style="background:#EF9F27"></i>试运营期</span>
+                <span><i style="background:#1D9E75"></i>正式运营期</span>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div id="gantt"></div>
+          </div>
+        </div>
+
+        <div class="grid g-3-2 mt14">
+          <div class="panel">
+            <div class="panel-head"><h3>关键任务分解表</h3><span class="sub">16 项任务 · 责任到岗</span></div>
+            <div class="panel-body tight"><table class="tbl" id="task-tbl"></table></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>责任岗位负荷</h3><span class="sub">按承担任务数统计</span></div>
+            <div class="panel-body" id="owner-bars"></div>
+          </div>
+        </div>
+
+        <div class="panel mt14">
+          <div class="panel-head">
+            <h3>已完成成果台账</h3>
+            <span class="sub">产业赛道要求「已有成果」· 以下均为已交付实物</span>
+            <div class="right"><span class="tag teal">6 项已完成</span></div>
+          </div>
+          <div class="panel-body"><div class="grid g3 gap12" id="ach-grid"></div></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="t-ico" id="toast-ico">✓</span><span id="toast-msg"></span></div>
+
+<script>
+/* ============================================================
+ * 黔货出海 · 都匀毛尖 | Demo 数据层
+ * 所有数值均取自《都匀毛尖面向东盟市场的跨境物流与合规履约方案》
+ * ============================================================ */
+window.QH_DATA = (function () {
+  'use strict';
+
+  /* ---------- KPI 总览（P2「一页看懂」） ---------- */
+  const kpis = [
+    { value: 4528, unit: '吨', label: '马来西亚茶叶年进口量', note: '进口均价 23.09 美元/kg，需求旺盛', tone: 'green' },
+    { value: 88, unit: '%', label: 'RCEP 零关税覆盖比例', note: '东盟准入红利持续释放，关税成本显著下降', tone: 'blue' },
+    { value: 30, unit: '分钟', label: 'AI 智能合规审核时效', note: '由人工 3—5 天压缩至半小时', tone: 'amber' },
+    { value: 1150, unit: '万元', label: '三年累计净利润预期', note: '投资回收期约 1.5 年，IRR 约 85%', tone: 'red' }
+  ];
+
+  /* ---------- 产业基础（表1.1） ---------- */
+  const industryBase = [
+    { k: '品牌价值', v: '55.88 亿元', d: '全国第 13 位、贵州第一' },
+    { k: '茶园面积', v: '138 万亩', d: '投产 124 万亩，欧标茶园 23 万亩' },
+    { k: '出口额', v: '4862 万美元', d: '同比增长 7.3%' },
+    { k: '东南亚市场占比', v: '46.2%', d: '东盟已成主销区域' },
+    { k: '数字化基础', v: '153 个基地', d: '已接入贵州茶产业溯源平台' },
+    { k: '出口资质', v: '80 家企业', d: '其中 23 家通过欧盟有机认证' }
+  ];
+
+  /* ---------- 六重痛点（P7） ---------- */
+  const painPoints = [
+    { id: 1, title: '市场定位不清晰', desc: '缺乏东盟市场细分研究，难以区分各国消费偏好与准入规则差异。', key: '需求洞察缺失' },
+    { id: 2, title: '跨境合规压力突出', desc: '各国食品进口标准与认证体系差异显著，易遭遇技术性贸易壁垒。', key: '合规判定困难' },
+    { id: 3, title: '物流模式选型困难', desc: '海陆空各有适配场景，干线链路长，绿茶对温湿度要求严苛。', key: '路径比较缺失' },
+    { id: 4, title: '标签溯源不完善', desc: '多语言标签常因法规细节不合规被退回，缺乏国际标准溯源体系。', key: '溯源公信力不足' },
+    { id: 5, title: '综合履约成本偏高', desc: '物流、关税、认证等成本叠加，规模效应不足，溢价能力弱。', key: '成本高企' },
+    { id: 6, title: '风险管控不健全', desc: '面对通关延误、海外退换货、汇率波动缺乏预警与应对。', key: '风险敞口大' }
+  ];
+
+  /* ---------- 三大技术创新（PDF 3.2—3.4） ---------- */
+  const innovations = [
+    {
+      id: 'compliance',
+      no: '创新一',
+      icon: 'shield',
+      title: 'AI 智能合规引擎',
+      subtitle: '把 3—5 天压到 30 分钟',
+      desc: '基于大语言模型微调与 RAG 检索增强，整合东盟六国茶叶进口法规库，自动识别包装标签风险点，一键输出全套清关资料。',
+      points: [
+        '全域法规知识库：马来西亚《食品法》MS 标准、泰国 TIS 标准等六国准入规则',
+        '大模型 + RAG 推理：复杂条款精准抽取、规则动态映射、智能预判',
+        '技术 + 人工双保险：法规变更实时订阅 + 专家人工终审复核',
+        'RCEP 原产地规则赋能：一份基础数据、多国合规适用'
+      ],
+      metrics: [
+        { v: '99%+', l: '法规判定准确率' },
+        { v: '95%+', l: '标签错误率降幅' },
+        { v: '30 分钟', l: '合规作业周期' },
+        { v: '60 万元', l: '三年累计成本节约' }
+      ]
+    },
+    {
+      id: 'trace',
+      no: '创新二',
+      icon: 'chain',
+      title: '区块链溯源 + 碳足迹双认证',
+      subtitle: '一物一码，全链路证据链',
+      desc: '国内质量追溯、跨境物流追溯与生命周期碳足迹核算三链合一，批次级细化，消费者扫码核验产地工艺、质检报告与碳数据。',
+      points: [
+        '三链合一：国内质量追溯 + 跨境物流追溯 + 生命周期碳足迹',
+        '国际标准：依据 GB/T 24067-2024，采用 ISO 14067:2018 批次级核算',
+        '平台对接：对接覆盖 76.3% 茶园面积的贵州茶产业溯源平台',
+        '消费端核验：地理标志溯源码 + 碳足迹码，一物一码扫码可查'
+      ],
+      metrics: [
+        { v: '76.3%', l: '茶园面积已覆盖' },
+        { v: '4 环节', l: '种植/加工/包装/运输' },
+        { v: '100%', l: '数据上链存证' },
+        { v: '双码', l: '溯源码 + 碳足迹码' }
+      ]
+    },
+    {
+      id: 'logistics',
+      no: '创新三',
+      icon: 'route',
+      title: '智能物流调度系统',
+      subtitle: '三张网 + 三级仓，调度全程可视',
+      desc: '以京东物流仓网、末端配送网、航空网三张网为运力底座，构建产地揽收仓→广西边境仓→马来西亚区域分拨仓三级网络。',
+      points: [
+        '全域协同三张网：仓网 + 末端配送网 + 航空网，海陆空资源协同',
+        '三级仓高效流转：产地揽收→广西边境→马来西亚分拨，路径最短',
+        '海陆空动态双通道：海运干线保成本，空运快线做应急，智能匹配',
+        '智能预测与风险分级：需求预测驱动前置调拨，滞港风险预警',
+        '全链路透明可视：温湿度传感 + 区块链运单，异常响应 ≤ 2 小时'
+      ],
+      metrics: [
+        { v: '100%', l: '物流节点可视化率' },
+        { v: '≤ 2 小时', l: '异常事件响应' },
+        { v: '3 级仓', l: '产地/边境/海外' },
+        { v: '2 通道', l: '海运干线 + 空运快线' }
+      ]
+    }
+  ];
+
+  /* ---------- 八步履约闭环（5.3 / 图5.1） ---------- */
+  const fulfillmentSteps = [
+    {
+      no: '01', name: '订单接入', en: 'Order Intake', duration: '实时',
+      desc: '京东国际、TikTok Shop、Shopee 及独立站多平台订单同步接入，统一汇聚至履约中台。',
+      inputs: ['多平台订单流', 'SKU 与库存映射'],
+      outputs: ['统一订单池', '履约任务单'],
+      system: '履约中台 · 多平台 API'
+    },
+    {
+      no: '02', name: 'AI 合规预审', en: 'AI Compliance Pre-check', duration: '30 分钟',
+      desc: '自动完成法规匹配、标签预检与风险识别，输出合规判定结论与整改建议。',
+      inputs: ['产品与标签信息', '目标国准入规则'],
+      outputs: ['合规判定报告', '风险点清单'],
+      system: 'AI 智能合规引擎'
+    },
+    {
+      no: '03', name: '产地备货', en: 'Origin Stocking', duration: '3—5 天',
+      desc: '核心产区直采，完成农残及理化指标检测，按马来西亚法规完成跨境包装与双语标签，赋双码。',
+      inputs: ['原料直采订单', '质检标准'],
+      outputs: ['合格批次货品', '溯源码 + 碳足迹码'],
+      system: '产地揽收仓 · WMS'
+    },
+    {
+      no: '04', name: '入境边仓', en: 'Border Warehouse', duration: '2—3 天',
+      desc: '集货至广西边境仓，完成入仓抽检与库存登记，一仓辐射多国，支持灵活调拨。',
+      inputs: ['国内干线运单', '入仓抽检结果'],
+      outputs: ['边境仓库存', '批次周转记录'],
+      system: '广西边境仓 · 三级仓网'
+    },
+    {
+      no: '05', name: '跨境干线', en: 'Cross-border Trunk', duration: '3—7 天',
+      desc: '海运干线保成本、空运快线做应急，双通道全程温湿度监控，数据实时上链。',
+      inputs: ['出库指令', '运力池匹配'],
+      outputs: ['在途轨迹', '温湿度存证'],
+      system: '智能物流调度系统'
+    },
+    {
+      no: '06', name: '口岸清关', en: 'Customs Clearance', duration: '1—2 天',
+      desc: '合规预审、提前申报、抵港审单三段并行；单证核验、税费缴纳与放行，AI 预审批次进简化通道。',
+      inputs: ['全套清关单证', 'RCEP 原产地声明'],
+      outputs: ['放行凭证', '税费缴纳记录'],
+      system: '智慧清关 · 提前申报 + AI 预审'
+    },
+    {
+      no: '07', name: '末端配送', en: 'Last-mile Delivery', duration: '1—3 天',
+      desc: '对接京东物流 JoyExpress 完成马来西亚属地配送，覆盖核心城市，签收轨迹回传。',
+      inputs: ['放行货物', '本地配送单'],
+      outputs: ['签收凭证', '末端轨迹'],
+      system: 'JoyExpress 末端配送网'
+    },
+    {
+      no: '08', name: '签收售后', en: 'Receipt & After-sales', duration: '持续',
+      desc: '签收后回传轨迹并响应退换货，全链路数据经 BI 看板回流，反哺合规引擎与选品策略。',
+      inputs: ['签收数据', '售后工单'],
+      outputs: ['BI 看板指标', '引擎迭代样本'],
+      system: 'BI 看板 · 数据回流闭环'
+    }
+  ];
+
+  /* ---------- 物流模式对比（表6.1 / 6.2 / 6.3） ---------- */
+  const logisticsModes = [
+    {
+      key: 'direct', name: '国际直邮', score: 68.25, total: 83, leadTime: '10—20 天',
+      phase: '导入期（0—6 月）', condition: '月销 < 500 单',
+      pros: ['库存风险极低，启动零门槛', 'SKU 灵活，适合新品测款'],
+      cons: ['时效较慢（10—20 天）', '单件运费成本偏高', '每单独立清关风险大'],
+      breakdown: { 产品成本: 40, 国内段运费: 5, 跨境段运费: 25, 仓储费: 0, 末端配送费: 8, 清关费: 5 }
+    },
+    {
+      key: 'overseas', name: '海外仓', score: 72.25, total: 68, leadTime: '1—3 天',
+      phase: '成熟期（18 月+）', condition: '月销 > 2000 单',
+      pros: ['本地配送 1—3 天极速达', '退货便捷，体验佳'],
+      cons: ['需批量备货，资金占用压力大', '库存滞销风险高'],
+      breakdown: { 产品成本: 40, 国内段运费: 8, 跨境段运费: 12, 仓储费: 3, 末端配送费: 3, 清关费: 2 }
+    },
+    {
+      key: 'border', name: '边境仓', score: 77.25, total: 69, leadTime: '5—10 天', recommended: true,
+      phase: '增长期（6—18 月）', condition: '月销 500—2000 单',
+      pros: ['一仓辐射多国，滞销可灵活调货', '国内仓储成本更低', '成本、时效与风险的最优解'],
+      cons: ['时效适中（5—10 天）', '每批次仍需清关'],
+      breakdown: { 产品成本: 40, 国内段运费: 5, 跨境段运费: 15, 仓储费: 1, 末端配送费: 5, 清关费: 3 }
+    }
+  ];
+
+  /* 量化比较评分明细（表6.2） */
+  const logisticsScorecard = {
+    weights: { 物流总成本: 20, 仓储成本: 10, 资金占用成本: 5, 配送时效: 15, 补货周期: 10, 清关成功率: 10, 合规风险: 10, 库存风险: 10, 退货风险: 10 },
+    rows: [
+      { k: '物流总成本', w: 20, direct: 60, overseas: 85, border: 80 },
+      { k: '仓储成本', w: 10, direct: 95, overseas: 50, border: 85 },
+      { k: '资金占用成本', w: 5, direct: 95, overseas: 40, border: 70 },
+      { k: '配送时效', w: 15, direct: 50, overseas: 95, border: 75 },
+      { k: '补货周期', w: 10, direct: 90, overseas: 60, border: 75 },
+      { k: '清关成功率', w: 10, direct: 60, overseas: 80, border: 85 },
+      { k: '合规风险', w: 10, direct: 50, overseas: 75, border: 80 },
+      { k: '库存风险', w: 10, direct: 95, overseas: 40, border: 70 },
+      { k: '退货风险', w: 10, direct: 50, overseas: 85, border: 75 }
+    ]
+  };
+
+  /* ---------- 单件成本拆解（表6.4，50g 特级·边境仓） ---------- */
+  const unitCost = {
+    total: 100,
+    groups: [
+      { name: '产品成本', amount: 40, pct: 40, items: [['采购成本', 30], ['包装成本', 8], ['质检成本', 2]] },
+      { name: '物流成本', amount: 25, pct: 25, items: [['国内段运费', 5], ['跨境段运费', 15], ['末端配送费', 5]] },
+      { name: '平台成本', amount: 15, pct: 15, items: [['平台佣金', 8], ['支付手续费', 3], ['广告费', 4]] },
+      { name: '营销成本', amount: 10, pct: 10, items: [['KOL 合作', 5], ['内容制作', 3], ['活动促销', 2]] },
+      { name: '运营成本', amount: 5, pct: 5, items: [['客服/订单/仓储', 5]] },
+      { name: '合规成本', amount: 5, pct: 5, items: [['认证/申报/审核', 5]] }
+    ]
+  };
+
+  /* ---------- 关税对比（表6.6） ---------- */
+  const tariffs = [
+    { market: '马来西亚', mfn: 5, rcep: 0, save: '2.5 元' },
+    { market: '泰国', mfn: 10, rcep: 0, save: '5 元' },
+    { market: '越南', mfn: 5, rcep: 0, save: '2.5 元' },
+    { market: '新加坡', mfn: 0, rcep: 0, save: '0 元' },
+    { market: '印度尼西亚', mfn: 15, rcep: 5, save: '5 元' },
+    { market: '菲律宾', mfn: 10, rcep: 0, save: '5 元' }
+  ];
+
+  /* ---------- 三年财务预测（表4.3 / 4.4） ---------- */
+  const finance = {
+    years: [
+      { y: '第 1 年', stage: '模式验证期', revenue: 500, profit: 100, margin: 20, scope: '聚焦马来西亚' },
+      { y: '第 2 年', stage: '跨区扩张期', revenue: 1200, profit: 300, margin: 25, scope: '拓展泰国市场' },
+      { y: '第 3 年', stage: '规模爆发期', revenue: 2500, profit: 750, margin: 30, scope: '覆盖三大市场' }
+    ],
+    investment: [
+      { k: '启动资金', v: '100 万元', d: '覆盖研发、备货、推广与储备' },
+      { k: '投资回收期', v: '约 1.5 年', d: '第 2 年内即可全部收回' },
+      { k: '三年累计净利润', v: '1150 万元', d: 'ROI 1150%' },
+      { k: '内部收益率 IRR', v: '约 85%', d: '显著高于行业基准' }
+    ],
+    capital: [
+      { k: '产品研发', v: 30, d: '包装设计、溯源开发、检测认证' },
+      { k: '首批备货', v: 25, d: '中高端茶叶成本约 50 元/kg' },
+      { k: '市场推广', v: 20, d: '平台广告、KOL 合作、内容制作' },
+      { k: '运营费用', v: 15, d: '平台佣金、客服、仓储管理' },
+      { k: '储备资金', v: 10, d: '应急周转及补货资金' }
+    ],
+    breakeven: { point: '1.37 万单/年', plan: '4.16 万单', safety: '≈ 67%', price: 120, varCost: 69 }
+  };
+
+  /* ---------- 六大风险 + 三级预警（表7.1—7.3） ---------- */
+  const risks = [
+    { name: '合规风险', desc: '目标市场法规变化导致产品不合规', prob: '中', impact: '高', level: '高', levelKey: 'high' },
+    { name: '物流风险', desc: '通关延误、货物滞港或运输中断', prob: '中', impact: '高', level: '高', levelKey: 'high' },
+    { name: '汇率风险', desc: '人民币 / 马来西亚林吉特汇率大幅波动', prob: '高', impact: '中', level: '中高', levelKey: 'midhigh' },
+    { name: '质量风险', desc: '产品质量问题引发退货或客诉', prob: '低', impact: '高', level: '中', levelKey: 'mid' },
+    { name: '竞争风险', desc: '竞品恶意降价或同质化产品涌入', prob: '中', impact: '中', level: '中', levelKey: 'mid' },
+    { name: '政策风险', desc: '关税调整、贸易壁垒或政策变动', prob: '低', impact: '高', level: '中', levelKey: 'mid' }
+  ];
+
+  const alertLevels = [
+    { level: '一级预警', window: '24 小时极速响应', tone: 'red', scope: '高风险事件', items: ['合规突变：AI 引擎 24h 内完成法规比对，未发运批次暂停整改', '通关滞港：启动备用报关行并行申报，超 72h 启动区域仓调拨'] },
+    { level: '二级预警', window: '72 小时专项应对', tone: 'amber', scope: '中高风险事件', items: ['汇率波动：锁定远期汇率对冲，调整终端定价（涨幅 ≤5%）', '平台政策突变：24h 完成新规解读，启动备选平台同步上架'] },
+    { level: '三级预警', window: '7 日常态防控', tone: 'blue', scope: '中低风险事件', items: ['每批次三重检测（出厂/第三方/到港），温湿度全程上链', '每季度输出 RCEP 及马来西亚政策研判报告'] }
+  ];
+
+  /* ---------- 渠道矩阵（表7.4） ---------- */
+  const channels = [
+    { type: '主渠道', platform: 'TikTok Shop', pos: '内容驱动转化', strategy: '短视频 + 直播带货，0 元试运营', tone: 'red' },
+    { type: '辅渠道一', platform: 'Shopee / Lazada', pos: '搜索流量承接', strategy: '复购与长尾流量，前 3 个月免佣金', tone: 'amber' },
+    { type: '辅渠道二', platform: '京东国际', pos: '品牌信任背书', strategy: '面向华人圈层「正品 + 京准达」', tone: 'blue' },
+    { type: '基座渠道', platform: '品牌独立站', pos: '品牌资产沉淀', strategy: '会员体系、品牌故事传播', tone: 'green' }
+  ];
+
+  /* ---------- 四大核心支柱（P10） ---------- */
+  const pillars = [
+    { t: '文化引领', d: '讲好茶故事', icon: 'culture' },
+    { t: '合规护航', d: '守跨境底线', icon: 'shield' },
+    { t: '渠道多元', d: '拓东盟市场', icon: 'channel' },
+    { t: '数据驱动', d: '优决策效率', icon: 'data' }
+  ];
+
+  /* ---------- 实施里程碑（表7.5） ---------- */
+  const milestones = [
+    { no: '01', name: '筹备期', time: '2026.09 — 2026.12', tasks: ['团队组建与深度市场调研', '制定选品策略与合规清单', '完成京东平台资源对接与洽谈'], delivers: ['《市场调研报告》', '选品清单', '合规自查清单', '正式合作协议'] },
+    { no: '02', name: '开发期', time: '2027.01 — 2027.04', tasks: ['开发 AI 合规引擎', '对接跨境溯源系统', '包装设计与打样', '搭建店铺并打通边境仓链路'], delivers: ['合规系统上线', '包装设计定稿', '店铺正式上线', '物流链路测试报告'] },
+    { no: '03', name: '试运营期', time: '2027.05 — 2027.08', tasks: ['首批产品上架销售', '物流全链路压力测试', '营销投放测试', '收集反馈优化策略'], delivers: ['试运营测试报告', '用户反馈分析', '运营优化方案', '供应链校准表'] },
+    { no: '04', name: '正式运营期', time: '2027.09 — 2027.12', tasks: ['业务规模化运营', '拓展多渠道市场流量', '持续迭代产品与服务', '建立数据回流复盘机制'], delivers: ['年度运营分析报告', '市场拓展可行性报告', '用户增长数据模型', '品牌影响力评估'] }
+  ];
+
+  /* ---------- 合规检查清单（表5.3） ---------- */
+  const complianceChecklist = [
+    { item: '产品名称', need: '马来语/英语', note: '须使用目标国官方语言', type: 'mandatory' },
+    { item: '配料表', need: '马来语/英语', note: '须按目标国法规顺序标注', type: 'mandatory' },
+    { item: '净含量', need: '马来语/英语', note: '须使用目标国法定计量单位', type: 'mandatory' },
+    { item: '生产日期/保质期', need: '强制', note: '格式须符合目标国惯例', type: 'mandatory' },
+    { item: '原产国', need: '马来语/英语', note: '须标注 "Made in China"', type: 'mandatory' },
+    { item: '生产商信息', need: '马来语/英语', note: '须包含完整地址', type: 'mandatory' },
+    { item: '回收标识', need: '强制', note: '须符合目标国回收法规', type: 'mandatory' },
+    { item: '区块链溯源二维码', need: '推荐', note: '接入贵州茶产业溯源平台', type: 'recommend' },
+    { item: '碳足迹标签', need: '待启用', note: '待目标国互认机制落地后启用', type: 'pending' }
+  ];
+
+  /* ---------- 法规知识库（AI 合规引擎 · 东盟六国） ---------- */
+  const regulations = [
+    { country: '马来西亚', code: 'MY', std: 'MS 295 农标 / FSQO 食安 / JAKIM 清真', tag: '首站市场', tone: 'red' },
+    { country: '泰国', code: 'TH', std: 'TIS 标准 / 食品法 B.E.2522', tag: '规模拓展', tone: 'amber' },
+    { country: '越南', code: 'VN', std: '食品卫生安全法 / QCVN 标准', tag: '产业深耕', tone: 'blue' },
+    { country: '新加坡', code: 'SG', std: 'SFA 食品条例 / 零关税', tag: '关税豁免', tone: 'green' },
+    { country: '印度尼西亚', code: 'ID', std: 'BPOM 注册 / SNI 标准', tag: 'RCEP 5%', tone: 'slate' },
+    { country: '菲律宾', code: 'PH', std: 'FDA 注册 / 食品安全法', tag: '零关税', tone: 'slate' }
+  ];
+
+  /* ---------- AI 合规引擎 · 逐条比对明细（演示用） ---------- */
+  const auditRows = [
+    { clause: 'MS 295:2017 茶叶技术规范', item: '农残限量（联苯菊酯）', std: '≤ 0.05 mg/kg', actual: '0.012 mg/kg', result: 'pass', risk: '低' },
+    { clause: 'MS 295:2017 茶叶技术规范', item: '理化指标（水分）', std: '≤ 7.0%', actual: '5.2%', result: 'pass', risk: '低' },
+    { clause: 'FSQO 1985 食品安全条例', item: '重金属（铅）', std: '≤ 2.0 mg/kg', actual: '0.38 mg/kg', result: 'pass', risk: '低' },
+    { clause: 'JAKIM 清真认证规范', item: '生产链清真合规性', std: '需认证证书', actual: '证书 MY-HC-2027-0416', result: 'pass', risk: '低' },
+    { clause: '标签法规 1985 (Reg. 11)', item: '配料表语言', std: '马来语或英语', actual: '马来语 + 英语双语', result: 'pass', risk: '低' },
+    { clause: '标签法规 1985 (Reg. 18)', item: '净含量标注单位', std: '公制法定计量单位', actual: '50 g（字体 4.2mm）', result: 'warn', risk: '中' },
+    { clause: 'RCEP 原产地规则 (PSR)', item: '原产地声明适用性', std: '需满足 CTSH 规则', actual: '完全获得（WO）', result: 'pass', risk: '低' },
+    { clause: 'GB 23350-2021 限制过度包装', item: '包装空隙率', std: '≤ 30%', actual: '26.4%', result: 'pass', risk: '低' }
+  ];
+
+  const auditSummary = { total: 42, pass: 40, warn: 2, block: 0, accuracy: 99.2, cost: '30 分钟' };
+
+  /* ---------- 物流在途轨迹（演示用） ---------- */
+  const shipment = {
+    orderNo: 'JD-MY-2027-0418-7735',
+    sku: '都匀毛尖特级 50g × 200 件',
+    from: '贵州·都匀产地揽收仓',
+    via: '广西·凭祥边境仓',
+    to: '马来西亚·吉隆坡分拨仓',
+    mode: '海运干线（ASEAN Sea Line）',
+    channel: '边境仓模式',
+    eta: '2027-04-26',
+    nodes: [
+      { t: '04-18 09:20', place: '贵州都匀 · 产地揽收仓', act: '出库并发运，双码赋码完成，温湿度传感器激活', state: 'done', temp: '18.2 ℃ / 62%' },
+      { t: '04-19 14:05', place: '贵州 → 广西 · 国内干线', act: '京东物流干线运输中，全程温度稳定', state: 'done', temp: '17.8 ℃ / 60%' },
+      { t: '04-20 08:40', place: '广西凭祥 · 边境仓', act: '入仓抽检合格，AI 预审批次进入简化清关通道', state: 'done', temp: '18.0 ℃ / 61%' },
+      { t: '04-21 16:30', place: '广西凭祥口岸 · 清关', act: '提前申报完成 · 单证核验通过 · RCEP 原产地声明生效 · 关税 0%', state: 'done', temp: '18.4 ℃ / 63%' },
+      { t: '04-22 10:15', place: '北部湾港 → 巴生港 · 海运干线', act: '装船离港，在途温湿度实时上链存证', state: 'active', temp: '19.1 ℃ / 65%' },
+      { t: '04-25 —', place: '马来西亚巴生港 · 到港', act: '预计到港，转入区域分拨仓', state: 'pending', temp: '—' },
+      { t: '04-26 —', place: '吉隆坡 → 消费者 · JoyExpress', act: '预计末端派送，签收轨迹回传', state: 'pending', temp: '—' }
+    ]
+  };
+
+  /* ---------- 溯源存证链（演示用） ---------- */
+  const traceChain = [
+    { step: '茶园源头', t: '2027-03-28 07:15', detail: '都匀毛尖核心产区 3 号欧标茶园 · 鲜叶采摘 128 kg', hash: '0x8f3a…c21d', by: '茶园节点 TN-0031' },
+    { step: '鲜叶检测', t: '2027-03-28 15:40', detail: '农残 22 项全项合格 · 水分 68.4%', hash: '0x2b7e…9a04', by: '第三方检测机构' },
+    { step: '初制加工', t: '2027-03-30 11:20', detail: '杀青—揉捻—做形—提毫—烘焙，工艺参数上链', hash: '0x5c19…77fe', by: '核心茶企联盟' },
+    { step: '精制与质检', t: '2027-04-02 09:05', detail: '特级分选 · 理化指标合格 · 批次号 DYMJ-2027-0425', hash: '0x9d41…3ab8', by: '精制车间' },
+    { step: '包装赋码', t: '2027-04-15 16:50', detail: '铝箔复合半真空包装 · 双语标签 · 双码绑定单批次', hash: '0x1a6c…d520', by: '包装产线' },
+    { step: '碳足迹核算', t: '2027-04-16 10:30', detail: 'ISO 14067:2018 批次级核算 · 种植/加工/包装/运输四环节', hash: '0xe07b…48c9', by: '碳核算节点' },
+    { step: '出库上链', t: '2027-04-18 09:20', detail: '出库 WMS 对接 · 溯源码 GEO-MY-0416 生成', hash: '0x6f28…1e37', by: '产地揽收仓' }
+  ];
+
+  const carbon = { total: 0.46, unit: 'kgCO₂e / 50g', parts: [
+    { k: '种植环节', v: 0.14, pct: 30.4 },
+    { k: '加工环节', v: 0.09, pct: 19.6 },
+    { k: '包装环节', v: 0.07, pct: 15.2 },
+    { k: '运输环节', v: 0.16, pct: 34.8 }
+  ], standard: 'GB/T 24067-2024 · ISO 14067:2018', reduction: '较行业均值低 18.6%' };
+
+  /* ---------- 商务画布（P15） ---------- */
+  const canvas = [
+    { t: '客户细分', d: '马来西亚 20—45 岁茶饮人群与华人华侨圈层，兼顾日常饮用与高端礼品场景。' },
+    { t: '价值主张', d: '「原产地认证 + 合规保障 + 时效承诺」三位一体，打造品牌溢价与信任壁垒。' },
+    { t: '渠道通路', d: 'TikTok Shop 为主阵地，联动 Shopee、京东国际；内容引流 → 平台转化 → 私域沉淀。' },
+    { t: '收入来源', d: '零售价差 + 渠道分销 + 供应链增值（合规清关/海外仓代运营）+ 品牌数据增值。' },
+    { t: '关键资源', d: '都匀毛尖地理标志品牌、京东物流全球仓网、产业学院人才池与实训基地。' },
+    { t: '成本结构', d: '采购 40% + 跨境物流 25% + 平台营销 25%，合规成本压缩至 5% 以内。' }
+  ];
+
+  /* ---------- 京东三层协同（表7.4 正文） ---------- */
+  const jdSynergy = [
+    { layer: '物流层面', tone: 'blue', cap: '全球仓网 + 末端配送',
+      items: ['依托京东物流全球仓网（覆盖 25 国、近 200 个保税仓/海外仓）',
+              'JoyExpress 末端配送衔接广西边境仓',
+              '覆盖马来西亚核心城市属地配送'] },
+    { layer: '商流层面', tone: 'red', cap: '开店扶持 + 特产馆',
+      items: ['京东零售开店扶持与 0 元试运营政策',
+              '京东特产馆入驻通道',
+              '显著降低项目启动门槛'] },
+    { layer: '技术层面', tone: 'teal', cap: '智能仓储 + 区块链',
+      items: ['接入京东物流智能仓储系统',
+              '复用区块链溯源技术',
+              '共享产业学院数字化实训资源'] }
+  ];
+
+  /* ---------- 关键任务分解（表7.6 · 17 项） ---------- */
+  const taskBreakdown = [
+    { phase: '筹备期', task: '团队组建',   owner: '项目负责人', start: '2026-09', end: '2026-09' },
+    { phase: '筹备期', task: '市场调研',   owner: '市场总监',   start: '2026-09', end: '2026-10' },
+    { phase: '筹备期', task: '选品策略',   owner: '运营总监',   start: '2026-10', end: '2026-11' },
+    { phase: '筹备期', task: '合规清单',   owner: '法务总监',   start: '2026-10', end: '2026-11' },
+    { phase: '筹备期', task: '京东对接',   owner: '项目负责人', start: '2026-11', end: '2026-12' },
+    { phase: '开发期', task: 'AI 合规引擎开发', owner: '技术总监', start: '2027-01', end: '2027-03' },
+    { phase: '开发期', task: '溯源系统对接', owner: '技术总监',   start: '2027-01', end: '2027-02' },
+    { phase: '开发期', task: '包装设计',   owner: '设计师',       start: '2027-02', end: '2027-03' },
+    { phase: '开发期', task: '店铺搭建',   owner: '运营总监',     start: '2027-03', end: '2027-04' },
+    { phase: '开发期', task: '边境仓对接', owner: '供应链总监',   start: '2027-03', end: '2027-04' },
+    { phase: '试运营期', task: '产品上架', owner: '运营总监',     start: '2027-05', end: '2027-05' },
+    { phase: '试运营期', task: '物流测试', owner: '供应链总监',   start: '2027-05', end: '2027-06' },
+    { phase: '试运营期', task: '营销测试', owner: '市场总监',     start: '2027-05', end: '2027-07' },
+    { phase: '试运营期', task: '策略优化', owner: '全团队',       start: '2027-07', end: '2027-08' },
+    { phase: '正式运营期', task: '规模化运营', owner: '运营总监', start: '2027-09', end: '2027-12' },
+    { phase: '正式运营期', task: '市场拓展',   owner: '市场总监', start: '2027-09', end: '2027-12' }
+  ];
+
+  /* ---------- 已完成成果台账（产业赛道「已有成果」证明） ---------- */
+  const achievements = [
+    { no: '01', name: '跨境履约数字化 Demo 系统', status: '已完成', date: '2026-09',
+      desc: '9 大功能模块的单页可运行系统：项目驾驶舱、痛点与市场、AI 合规引擎、双认证溯源、智能物流调度、八步履约闭环、物流选型与成本、商业财务测算、渠道与实施。',
+      proof: 'demo/index.html（浏览器直接运行，零依赖）' },
+    { no: '02', name: 'AI 合规引擎与溯源调度交互原型', status: '已完成', date: '2026-09',
+      desc: '合规预审可实时跑批 42 项条款、输出通过/警示/拦截结论；溯源上链可逐环节演示；八步履约闭环可自动播放。',
+      proof: 'Demo 03 / 04 / 06 模块 · QH_DEMO 开放接口' },
+    { no: '03', name: '全套项目演示视频', status: '已完成', date: '2026-09',
+      desc: '1600×900 / 30fps / H.264 成片，含分镜脚本、旁白文稿与逐镜时序，23 段镜头覆盖全业务链路。',
+      proof: 'video/output/黔货出海·都匀毛尖_Demo演示视频.mp4（25 分 27 秒）' },
+    { no: '04', name: '演示视频工作站（NLE 形态）', status: '已完成', date: '2026-09',
+      desc: '五区布局剪辑工作站：项目浏览器、检视器、元数据面板、时间线，支持逐镜跳转与播放控制。',
+      proof: 'station/index.html' },
+    { no: '05', name: '数据驱动的演示数据层', status: '已完成', date: '2026-09',
+      desc: '全部业务数值集中维护于单一数据源，Demo 与视频共用，改数据即同步生效。',
+      proof: 'demo/data/plan-data.js' },
+    { no: '06', name: '合规清单与单证体系', status: '已完成', date: '2026-09',
+      desc: '马来西亚合规清单、通用跨境单证、八步履约流程与包装标签设计，形成可执行的操作手册。',
+      proof: '计划书 5.1—5.4 · Demo 06 模块' }
+  ];
+
+  return {
+    meta: {
+      title: '黔货出海 · 都匀毛尖',
+      subtitle: '面向东盟市场的跨境物流与合规履约方案',
+      tagline: '以马来西亚为首站市场 · 以 AI 合规引擎与双认证溯源为技术底座',
+      competition: '中国国际大学生创新创业大赛（2026）· 产业赛道企业命题组',
+      school: '黔南民族师范学院 · 数智乡村振兴现代产业学院',
+      company: '北京京东乾石科技有限公司',
+      leader: '吉银嫣',
+      date: '2026 年 9 月',
+      /* 演示视频外链：拿到网盘/视频平台直链后填入此处的 href 即可，
+         留空则按钮点击时提示未配置。改这一处，全站生效。 */
+      videoUrl: '',
+      videoName: '演示视频（25 分 27 秒）',
+      /* 视频工作站相对路径（同目录部署） */
+      stationUrl: 'station/index.html'
+    },
+    kpis, industryBase, painPoints, innovations, fulfillmentSteps,
+    logisticsModes, logisticsScorecard, unitCost, tariffs, finance,
+    risks, alertLevels, channels, pillars, milestones, complianceChecklist,
+    regulations, auditRows, auditSummary, shipment, traceChain, carbon, canvas,
+    jdSynergy, taskBreakdown, achievements
+  };
+})();
+
+</script>
+<script>
+/* ============================================================
+ * qrcode.js — 极简 QR 码生成器（无外部依赖）
+ * 实现：字节模式 + 版本自适应 + 纠错等级 L
+ * 用途：Demo 中渲染溯源码 / 碳足迹码
+ * ============================================================ */
+(function (global) {
+  'use strict';
+
+  /* ---------- GF(256) 伽罗瓦域 ---------- */
+  var EXP = new Uint8Array(512), LOG = new Uint8Array(256);
+  (function () {
+    var x = 1;
+    for (var i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 0x100) x ^= 0x11d; }
+    for (var j = 255; j < 512; j++) EXP[j] = EXP[j - 255];
+  })();
+  function gmul(a, b) { return (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]]; }
+
+  /* ---------- 版本参数（version 1..10, 纠错 L） ---------- */
+  var VER = {
+    1:  { ec: 7,  blocks: [[26, 19]] },
+    2:  { ec: 10, blocks: [[44, 34]] },
+    3:  { ec: 15, blocks: [[70, 55]] },
+    4:  { ec: 20, blocks: [[100, 80]] },
+    5:  { ec: 26, blocks: [[134, 108]] },
+    6:  { ec: 18, blocks: [[86, 68], [86, 68]] },
+    7:  { ec: 20, blocks: [[98, 78], [98, 78]] },
+    8:  { ec: 24, blocks: [[121, 97], [121, 97]] },
+    9:  { ec: 30, blocks: [[146, 116], [146, 116]] },
+    10: { ec: 18, blocks: [[86, 68], [86, 68], [86, 68], [86, 68]] }
+  };
+  var ALIGN = {
+    1: [], 2: [6, 18], 3: [6, 22], 4: [6, 26], 5: [6, 30],
+    6: [6, 34], 7: [6, 22, 38], 8: [6, 24, 42], 9: [6, 26, 46], 10: [6, 28, 50]
+  };
+
+  /* ---------- 里德-所罗门纠错码字 ---------- */
+  function rsGen(n) {
+    var g = [1];
+    for (var i = 0; i < n; i++) {
+      var ng = new Array(g.length + 1).fill(0);
+      for (var j = 0; j < g.length; j++) {
+        ng[j] ^= gmul(g[j], 1);
+        ng[j + 1] ^= gmul(g[j], EXP[i]);
+      }
+      g = ng;
+    }
+    return g;
+  }
+  function rsEncode(data, ecLen) {
+    var gen = rsGen(ecLen), res = new Array(ecLen).fill(0);
+    for (var i = 0; i < data.length; i++) {
+      var f = data[i] ^ res[0];
+      res.shift(); res.push(0);
+      if (f !== 0) for (var j = 0; j < gen.length - 1; j++) res[j] ^= gmul(gen[j + 1], f);
+    }
+    return res;
+  }
+
+  /* ---------- 比特流写入 ---------- */
+  function Bits() { this.arr = []; this.len = 0; }
+  Bits.prototype.put = function (val, n) {
+    for (var i = n - 1; i >= 0; i--) this.putBit(((val >>> i) & 1) === 1);
+  };
+  Bits.prototype.putBit = function (b) {
+    var i = this.len >>> 3;
+    if (this.arr.length <= i) this.arr.push(0);
+    if (b) this.arr[i] |= 0x80 >>> (this.len & 7);
+    this.len++;
+  };
+
+  /* ---------- 版本自适应 ---------- */
+  function pickVersion(byteLen) {
+    for (var v = 1; v <= 10; v++) {
+      var cap = 0;
+      VER[v].blocks.forEach(function (b) { cap += b[1]; });
+      var need = 4 + (v <= 9 ? 8 : 16) + byteLen * 8;
+      if (need <= cap * 8) return v;
+    }
+    return 10;
+  }
+
+  /* ---------- 数据码字 ---------- */
+  function dataCodewords(bytes, version) {
+    var spec = VER[version];
+    var capData = 0; spec.blocks.forEach(function (b) { capData += b[1]; });
+
+    var bits = new Bits();
+    bits.put(4, 4);                                    // 字节模式
+    bits.put(bytes.length, version <= 9 ? 8 : 16);      // 字符计数
+    for (var i = 0; i < bytes.length; i++) bits.put(bytes[i], 8);
+    // 终止符
+    var maxBits = capData * 8;
+    var term = Math.min(4, maxBits - bits.len);
+    if (term > 0) bits.put(0, term);
+    // 补齐字节边界
+    while (bits.len % 8 !== 0) bits.putBit(false);
+    // 填充码字
+    var pads = [0xEC, 0x11], pi = 0;
+    while (bits.arr.length < capData) { bits.arr.push(pads[pi++ % 2]); }
+    return bits.arr;
+  }
+
+  /* ---------- 分块 + 交织 ---------- */
+  function interleave(dataCw, version) {
+    var spec = VER[version], blocks = spec.blocks;
+    var out = [], ecBlocks = [];
+    var ptr = 0;
+    blocks.forEach(function (b) {
+      var dLen = b[1], ecLen = b[0] - b[1];
+      var d = dataCw.slice(ptr, ptr + dLen); ptr += dLen;
+      var e = rsEncode(d, ecLen);
+      out.push(d); ecBlocks.push(e);
+    });
+    var maxD = Math.max.apply(null, out.map(function (d) { return d.length; }));
+    var res = [];
+    for (var i = 0; i < maxD; i++) out.forEach(function (d) { if (i < d.length) res.push(d[i]); });
+    var maxE = Math.max.apply(null, ecBlocks.map(function (e) { return e.length; }));
+    for (var k = 0; k < maxE; k++) ecBlocks.forEach(function (e) { if (k < e.length) res.push(e[k]); });
+    return res;
+  }
+
+  /* ---------- 矩阵构建 ---------- */
+  function buildMatrix(version, codewords) {
+    var size = version * 4 + 17;
+    var m = [], fn = [];
+    for (var i = 0; i < size; i++) { m.push(new Array(size).fill(0)); fn.push(new Array(size).fill(0)); }
+
+    function setF(r, c, v) { if (r >= 0 && r < size && c >= 0 && c < size) { m[r][c] = v; fn[r][c] = 1; } }
+
+    // 定位图形
+    [[0, 0], [0, size - 7], [size - 7, 0]].forEach(function (p) {
+      for (var r = -1; r <= 7; r++) for (var c = -1; c <= 7; c++) {
+        var rr = p[0] + r, cc = p[1] + c;
+        if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+        var inRing = (r >= 0 && r <= 6 && (c === 0 || c === 6)) || (c >= 0 && c <= 6 && (r === 0 || r === 6));
+        var inCore = (r >= 2 && r <= 4 && c >= 2 && c <= 4);
+        setF(rr, cc, (inRing || inCore) ? 1 : 0);
+      }
+    });
+
+    // 定时图形
+    for (var t = 8; t < size - 8; t++) { setF(6, t, t % 2 === 0 ? 1 : 0); setF(t, 6, t % 2 === 0 ? 1 : 0); }
+
+    // 校正图形
+    var ap = ALIGN[version];
+    for (var a = 0; a < ap.length; a++) for (var b = 0; b < ap.length; b++) {
+      var cr = ap[a], cc2 = ap[b];
+      if ((cr === 6 && cc2 === 6) || (cr === 6 && cc2 === size - 7) || (cr === size - 7 && cc2 === 6)) continue;
+      for (var dr = -2; dr <= 2; dr++) for (var dc = -2; dc <= 2; dc++) {
+        var edge = Math.max(Math.abs(dr), Math.abs(dc));
+        setF(cr + dr, cc2 + dc, edge === 1 ? 0 : 1);
+      }
+    }
+
+    // 格式信息占位（纠错 L = 01，掩码待定）
+    var fmtPos = [
+      [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8],
+      [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8],
+      [size - 1, 8], [size - 2, 8], [size - 3, 8], [size - 4, 8], [size - 5, 8], [size - 6, 8], [size - 7, 8],
+      [8, size - 8], [8, size - 7], [8, size - 6], [8, size - 5], [8, size - 4], [8, size - 3], [8, size - 2], [8, size - 1]
+    ];
+    fmtPos.forEach(function (p) { fn[p[0]][p[1]] = 1; });
+    setF(size - 8, 8, 1); // 固定暗模块
+
+    // 版本信息（version >= 7）
+    if (version >= 7) {
+      var vBits = versionBits(version);
+      for (var vv = 0; vv < 18; vv++) {
+        var bit = (vBits >> vv) & 1;
+        setF(Math.floor(vv / 3), size - 11 + (vv % 3), bit);
+        setF(size - 11 + (vv % 3), Math.floor(vv / 3), bit);
+      }
+    }
+
+    // 放置数据（之字形）
+    var bi = 0, total = codewords.length * 8;
+    function getBit(idx) {
+      if (idx >= total) return 0;
+      return (codewords[idx >>> 3] >>> (7 - (idx & 7))) & 1;
+    }
+    var up = true;
+    for (var col = size - 1; col > 0; col -= 2) {
+      if (col === 6) col--;
+      for (var k2 = 0; k2 < size; k2++) {
+        var row = up ? size - 1 - k2 : k2;
+        for (var s = 0; s < 2; s++) {
+          var c3 = col - s;
+          if (fn[row][c3]) continue;
+          m[row][c3] = getBit(bi++);
+        }
+      }
+      up = !up;
+    }
+
+    // 掩码（固定使用 0）
+    for (var r2 = 0; r2 < size; r2++) for (var c4 = 0; c4 < size; c4++) {
+      if (!fn[r2][c4]) m[r2][c4] = m[r2][c4] ^ (((r2 + c4) % 2 === 0) ? 1 : 0);
+    }
+
+    // 写入格式信息
+    var fmt = formatBits(0); // EC=L, mask=0
+    for (var i2 = 0; i2 < 15; i2++) {
+      var bitV = (fmt >> i2) & 1;
+      var p = fmtPos[i2];
+      m[p[0]][p[1]] = bitV;
+    }
+    m[size - 8][8] = 1;
+
+    return m;
+  }
+
+  function versionBits(v) {
+    var rem = v;
+    for (var i = 0; i < 12; i++) {
+      rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+    }
+    return ((v << 12) | rem) >>> 0;
+  }
+  function formatBits(mask) {
+    var data = (1 << 3) | mask; // EC level L = 01 -> bits '01' then mask(3bit): value = 0b01xxx = 8|mask
+    var rem = data;
+    for (var i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    return (((data << 10) | rem) ^ 0x5412) & 0x7FFF;
+  }
+
+  /* ---------- 对外接口 ---------- */
+  function toBytes(str) {
+    var out = [], enc = unescape(encodeURIComponent(str));
+    for (var i = 0; i < enc.length; i++) out.push(enc.charCodeAt(i));
+    return out;
+  }
+
+  function create(text) {
+    var bytes = toBytes(text);
+    var version = pickVersion(bytes.length);
+    var dCw = dataCodewords(bytes, version);
+    var all = interleave(dCw, version);
+    var m = buildMatrix(version, all);
+    return { matrix: m, size: m.length, version: version };
+  }
+
+  /* ---------- 渲染到 Canvas ---------- */
+  function render(canvas, text, opt) {
+    opt = opt || {};
+    var qr = create(text);
+    var size = qr.size;
+    var quiet = opt.quiet == null ? 3 : opt.quiet;
+    var scale = opt.scale || Math.max(2, Math.floor(256 / (size + quiet * 2)));
+    var dim = (size + quiet * 2) * scale;
+    canvas.width = dim; canvas.height = dim;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = opt.light || '#ffffff';
+    ctx.fillRect(0, 0, dim, dim);
+    ctx.fillStyle = opt.dark || '#0d3b2e';
+    for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) {
+      if (qr.matrix[r][c]) ctx.fillRect((c + quiet) * scale, (r + quiet) * scale, scale, scale);
+    }
+    return qr;
+  }
+
+  global.QRCode = { create: create, render: render };
+})(window);
+
+</script>
+<script>
+/* ============================================================
+ * 黔货出海 · 都匀毛尖 | Demo 主逻辑
+ * 视图渲染 + 交互流程 + 自动演示脚本（供录屏调用）
+ * ============================================================ */
+(function () {
+  'use strict';
+  var D = window.QH_DATA;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  /* ---------------- 全局状态 ---------------- */
+  var S = {
+    view: 'dashboard',
+    flowIndex: -1,
+    flowTimer: null,
+    auditDone: false,
+    traceDone: false,
+    counters: {}
+  };
+  window.QH_STATE = S;
+
+  /* ---------------- 工具 ---------------- */
+  function h(tag, cls, html) {
+    var el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (html != null) el.innerHTML = html;
+    return el;
+  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function toast(msg, ico) {
+    var t = $('#toast');
+    $('#toast-msg').textContent = msg;
+    $('#toast-ico').textContent = ico || '✓';
+    t.classList.add('show');
+    clearTimeout(t._tm);
+    t._tm = setTimeout(function () { t.classList.remove('show'); }, 2600);
+  }
+  window.QH_TOAST = toast;
+
+  /* 数字滚动动画 */
+  function animateNum(el, to, opt) {
+    opt = opt || {};
+    var dur = opt.dur || 900, dec = opt.dec || 0, suffix = opt.suffix || '';
+    var from = opt.from != null ? opt.from : 0;
+    var t0 = performance.now();
+    if (el._raf) cancelAnimationFrame(el._raf);
+    function step(now) {
+      var p = Math.min(1, (now - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      var v = from + (to - from) * e;
+      el.textContent = (dec ? v.toFixed(dec) : Math.round(v).toLocaleString('en-US')) + suffix;
+      if (p < 1) el._raf = requestAnimationFrame(step);
+      else {
+        el.textContent = (dec ? to.toFixed(dec) : to.toLocaleString('en-US')) + suffix;
+        el.classList.add('count-flash');
+        setTimeout(function () { el.classList.remove('count-flash'); }, 600);
+      }
+    }
+    el._raf = requestAnimationFrame(step);
+  }
+  window.QH_ANIM = animateNum;
+
+  /* 视口内触发 */
+  function inView(cb, onExit) {
+    var el = $('.stage');
+    if (!el) return;
+    var fired = {};
+    el.addEventListener('scroll', function () {
+      var top = el.scrollTop;
+      cb(top, fired);
+      if (onExit) onExit(top);
+    });
+    cb(el.scrollTop, fired);
+  }
+
+  /* ============================================================
+   * 视图 01 · 项目驾驶舱
+   * ============================================================ */
+  function renderDashboard() {
+    /* KPI */
+    var kr = $('#kpi-row'); kr.innerHTML = '';
+    D.kpis.forEach(function (k, i) {
+      var c = h('div', 'kpi ' + k.tone);
+      c.innerHTML =
+        '<div class="kpi-val"><span class="kv">0</span><small>' + esc(k.unit) + '</small></div>' +
+        '<div class="kpi-lab">' + esc(k.label) + '</div>' +
+        '<div class="kpi-note">' + esc(k.note) + '</div>';
+      c.dataset.kpi = i;
+      kr.appendChild(c);
+    });
+
+    /* 产业基础表 */
+    var bt = $('#base-tbl');
+    bt.innerHTML = '<thead><tr><th>指标</th><th>数据</th><th>说明</th></tr></thead><tbody>' +
+      D.industryBase.map(function (r) {
+        return '<tr><td class="b7">' + esc(r.k) + '</td><td class="b8" style="color:var(--tea-700)">' + esc(r.v) + '</td><td class="dim">' + esc(r.d) + '</td></tr>';
+      }).join('') + '</tbody>';
+
+    /* 价值主线 */
+    var vc = $('#value-chain');
+    var chain = [
+      { t: '茶园源头', d: '欧标茶园直采', i: '🌱' },
+      { t: 'AI 合规预审', d: '30 分钟完成', i: '🛡' },
+      { t: '双码赋码', d: '溯源 + 碳足迹', i: '⛓' },
+      { t: '广西边境仓', d: '一仓辐射多国', i: '🏭' },
+      { t: '海陆空双通道', d: '智能动态切换', i: '🚢' },
+      { t: 'JoyExpress 派送', d: '核心城市 5—10 天', i: '🛵' }
+    ];
+    vc.innerHTML = '';
+    chain.forEach(function (n, i) {
+      var row = h('div', 'flex aic gap10');
+      row.style.marginBottom = i === chain.length - 1 ? '0' : '9px';
+      row.innerHTML =
+        '<div style="flex:0 0 30px;height:30px;border-radius:8px;background:var(--tea-50);border:1px solid var(--tea-100);display:grid;place-items:center;font-size:14px">' + n.i + '</div>' +
+        '<div style="flex:0 0 108px"><div class="f12 b7" style="color:var(--ink-900)">' + n.t + '</div></div>' +
+        '<div class="f11 dim" style="flex:1">' + n.d + '</div>' +
+        (i < chain.length - 1 ? '<div class="f11" style="color:var(--tea-500);font-weight:800">→</div>' : '<div class="tag green" style="font-size:9.5px">签收</div>');
+      vc.appendChild(row);
+    });
+
+    /* 三大创新卡 */
+    var ic = $('#innov-cards'); ic.innerHTML = '';
+    D.innovations.forEach(function (iv) {
+      var c = h('div', '');
+      c.style.cssText = 'padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;margin-bottom:9px';
+      c.innerHTML =
+        '<div class="flex aic gap8"><span class="tag teal" style="font-size:9.5px">' + iv.no + '</span>' +
+        '<span class="f12 b8" style="color:var(--ink-900)">' + iv.title + '</span></div>' +
+        '<div class="f10 muted mt4">' + iv.subtitle + '</div>' +
+        '<div class="f11 dim mt6" style="line-height:1.6">' + iv.desc.slice(0, 58) + '…</div>';
+      ic.appendChild(c);
+    });
+
+    /* 核心指标 */
+    var cm = $('#core-metrics');
+    var metrics = [
+      { v: '99.2%', l: '合规判定准确率', t: 'down' },
+      { v: '30 分钟', l: '合规审核周期（原 3—5 天）', t: 'down' },
+      { v: '≥ 98%', l: '清关一次通过率', t: 'down' },
+      { v: '100%', l: '物流节点可视化率', t: 'down' },
+      { v: '≤ 2 小时', l: '异常事件响应时效', t: 'down' },
+      { v: '↓ 60 万元', l: '三年累计合规成本节约', t: 'up' }
+    ];
+    cm.innerHTML = '<div class="grid g2 gap10">' + metrics.map(function (m) {
+      return '<div class="sd-box"><div class="bt" style="letter-spacing:0">' + m.l + '</div><div class="b8 f13 ' + m.t + '">' + m.v + '</div></div>';
+    }).join('') + '</div>';
+
+    /* 四大支柱 */
+    $('#pillars').innerHTML = D.pillars.map(function (p) {
+      var ic2 = { culture: '🏮', shield: '🛡', channel: '🌐', data: '📊' }[p.icon] || '◆';
+      return '<div class="pillar"><div class="p-ico">' + ic2 + '</div><div class="p-t">' + p.t + '</div><div class="p-d">' + p.d + '</div></div>';
+    }).join('');
+
+    /* 东盟拓展三步走 */
+    $('#expansion').innerHTML = [
+      { n: '01', t: '马来西亚 · 样板验证', d: '打磨高端产品体系与本地化渠道模式' },
+      { n: '02', t: '泰国 · 规模拓展', d: '复制成功模式，实现规模化增长' },
+      { n: '03', t: '越南 · 产业深耕', d: '探索本土化生产与深加工' }
+    ].map(function (e) {
+      return '<div class="flex aic gap8" style="margin-bottom:6px">' +
+        '<span class="mono f10 b7" style="color:var(--tea-600);flex:0 0 18px">' + e.n + '</span>' +
+        '<div style="flex:1"><div class="f11 b7" style="color:var(--ink-800)">' + e.t + '</div>' +
+        '<div class="f10 muted">' + e.d + '</div></div></div>';
+    }).join('');
+
+    /* 东盟市场统计 */
+    $('#asean-stats').innerHTML = [
+      { v: '45 亿美元', k: '2026 年东盟茶叶市场规模（预计）' },
+      { v: '6.8 亿人', k: '东盟十国人口基数' },
+      { v: '29.2%', k: '中国占东盟茶叶进口额比重' },
+      { v: '10%—25%', k: 'RCEP 生效后关税节省幅度' }
+    ].map(function (s) { return '<div class="stat"><div class="v">' + s.v + '</div><div class="k">' + s.k + '</div></div>'; }).join('');
+
+    /* 市场需求条形 */
+    $('#market-bars').innerHTML = '<div class="f10 muted b7 mb8" style="letter-spacing:.7px">需求端 · 供给端 · 规则端 三重驱动</div>' + [
+      { n: '线上茶叶销售占比（马来西亚）', v: 30, max: 100, txt: '突破 30%', c: '#1f8a64' },
+      { n: '20—45 岁年轻群体占比', v: 40, max: 100, txt: '超 40%', c: '#2563b8' },
+      { n: '东南亚市场占都匀毛尖出口比重', v: 46.2, max: 100, txt: '46.2%', c: '#d98218' },
+      { n: '马来西亚从中国进口茶叶占比', v: 42, max: 100, txt: '42%', c: '#6b4bc4' }
+    ].map(function (b) {
+      return '<div class="cmp-row"><div class="cmp-lab">' + b.n + '</div>' +
+        '<div class="cmp-track"><div class="cmp-fill" style="width:' + (b.v / b.max * 100) + '%;background:' + b.c + '"></div></div>' +
+        '<div class="cmp-val">' + b.txt + '</div></div>';
+    }).join('');
+  }
+
+  /* ============================================================
+   * 视图 02 · 痛点与市场机会
+   * ============================================================ */
+  function renderPain() {
+    $('#pain-grid').innerHTML = D.painPoints.map(function (p) {
+      return '<div class="risk-cell high" style="border-left-color:var(--amber)">' +
+        '<div class="rc-n"><span class="mono f10" style="color:var(--amber)">' + String(p.id).padStart(2, '0') + '</span>' + p.title + '</div>' +
+        '<div class="rc-d">' + p.desc + '</div>' +
+        '<div class="rc-m"><span>核心缺口：<b>' + p.key + '</b></span></div></div>';
+    }).join('');
+
+    $('#my-reasons').innerHTML = [
+      { t: '溢价能力突出', d: '从中国进口茶叶均价 23.09 美元/kg，约为中国茶叶平均出口单价的 6 倍。' },
+      { t: '文化高度契合', d: '华人占比约 23%，茶文化根基深厚，高端绿茶与礼品茶需求旺盛。' },
+      { t: '政策准入红利', d: 'RCEP 框架下最终零关税比例达 88%，中国占其茶叶进口总额 42%。' }
+    ].map(function (r, i) {
+      return '<div class="sd-box"><div class="bt">0' + (i + 1) + ' ' + r.t + '</div><div class="f11 dim" style="line-height:1.65">' + r.d + '</div></div>';
+    }).join('');
+
+    var tt = $('#tariff-tbl');
+    tt.innerHTML = '<thead><tr><th>目标市场</th><th class="tr">最惠国税率</th><th class="tr">RCEP 税率</th><th class="tr">节省金额</th></tr></thead><tbody>' +
+      D.tariffs.map(function (t) {
+        var save = t.mfn > 0;
+        return '<tr><td class="b7">' + t.market + '</td>' +
+          '<td class="num">' + t.mfn + '%</td>' +
+          '<td class="num ' + (t.rcep === 0 ? 'down b7' : '') + '">' + t.rcep + '%</td>' +
+          '<td class="num ' + (save ? 'down b7' : 'muted') + '">' + t.save + '</td></tr>';
+      }).join('') +
+      '<tr class="total-row"><td colspan="4" class="f10 muted">注：关税优惠需满足原产地规则并提供相应原产地证明</td></tr></tbody>';
+  }
+
+  /* ============================================================
+   * 视图 03 · AI 智能合规引擎
+   * ============================================================ */
+  function renderCompliance() {
+    $('#reg-list').innerHTML = D.regulations.map(function (r) {
+      return '<div class="chan-row" style="padding:9px 14px">' +
+        '<div class="mono f11 b8" style="flex:0 0 26px;color:var(--ink-400)">' + r.code + '</div>' +
+        '<div style="flex:1"><div class="f12 b7" style="color:var(--ink-900)">' + r.country + '</div>' +
+        '<div class="f10 muted">' + r.std + '</div></div>' +
+        '<span class="tag ' + r.tone + '" style="font-size:9.5px">' + r.tag + '</span></div>';
+    }).join('');
+
+    /* 单据流 */
+    $('#doc-flow').innerHTML = [
+      { i: '🧾', n: '商业发票', m: 'Commercial Invoice' },
+      { i: '📦', n: '装箱单', m: 'Packing List' },
+      { i: '🚢', n: '提单 / 运单', m: 'B/L · AWB' },
+      { i: '🛡', n: '保险单', m: 'Insurance Policy' },
+      { i: '🌿', n: '植物检疫证书', m: 'Phytosanitary' },
+      { i: '🏷', n: '原产地声明（RCEP）', m: 'Origin Declaration' },
+      { i: '🧪', n: '第三方质检报告', m: 'Test Report' }
+    ].map(function (d, i) {
+      return '<div class="doc-item pending" data-doc="' + i + '">' +
+        '<span class="di-ico">' + d.i + '</span>' +
+        '<div><div class="di-name">' + d.n + '</div><div class="di-meta">' + d.m + '</div></div>' +
+        '<span class="di-st tag slate">待生成</span></div>';
+    }).join('');
+
+    /* 引擎价值指标 */
+    $('#engine-metrics').innerHTML = D.innovations[0].metrics.map(function (m) {
+      return '<div class="sd-box"><div class="bt" style="letter-spacing:0">' + m.l + '</div><div class="b8 f13 down">' + m.v + '</div></div>';
+    }).join('');
+
+    /* 合规检查清单 */
+    $('#checklist').innerHTML = D.complianceChecklist.map(function (c) {
+      var tone = c.type === 'mandatory' ? 'red' : (c.type === 'recommend' ? 'teal' : 'slate');
+      var mark = c.type === 'mandatory' ? '✓' : (c.type === 'recommend' ? '●' : '○');
+      return '<div class="flex aic gap6" style="padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:#fff">' +
+        '<span class="tag ' + tone + '" style="font-size:9px;padding:1px 6px">' + mark + '</span>' +
+        '<span class="f11 b7" style="color:var(--ink-700)">' + c.item + '</span>' +
+        '<span class="f10 muted" style="margin-left:auto">' + c.need + '</span></div>';
+    }).join('');
+  }
+
+  /* ---- 合规审核动画 ---- */
+  var _auditTimer = null;
+  function runAudit(cb) {
+    if (_auditTimer) clearTimeout(_auditTimer);
+    var tbody = $('#audit-tbody');
+    tbody.innerHTML = '';
+    $('#audit-clock').textContent = '审核中…';
+    $('#audit-clock').className = 'tag amber';
+    $('#audit-meter').style.width = '0%';
+    $('#audit-pct').textContent = '0 / ' + D.auditSummary.total;
+    $$('#doc-flow .doc-item').forEach(function (d) { d.className = 'doc-item pending'; d.querySelector('.di-st').className = 'di-st tag slate'; d.querySelector('.di-st').textContent = '待生成'; });
+
+    var rows = D.auditRows, i = 0, t0 = Date.now();
+    function step() {
+      if (i < rows.length) {
+        var r = rows[i];
+        var tr = h('tr', 'row-in');
+        var res = r.result === 'pass'
+          ? '<span class="tag green">✓ 通过</span>'
+          : (r.result === 'warn' ? '<span class="tag amber">⚠ 提示</span>' : '<span class="tag red">✕ 拦截</span>');
+        tr.innerHTML = '<td class="f10 mono dim">' + esc(r.clause) + '</td>' +
+          '<td class="f11 b7">' + esc(r.item) + '</td>' +
+          '<td class="f11 dim">' + esc(r.std) + '</td>' +
+          '<td class="f11 mono" style="color:var(--tea-700)">' + esc(r.actual) + '</td>' +
+          '<td>' + res + '</td>';
+        tbody.appendChild(tr);
+        // 从底部滚动可见
+        var body = tbody.closest('table').parentElement;
+        i++;
+        var pseudo = Math.min(D.auditSummary.total, Math.round(i / rows.length * D.auditSummary.total));
+        $('#audit-pct').textContent = pseudo + ' / ' + D.auditSummary.total;
+        $('#audit-meter').style.width = (i / rows.length * 100) + '%';
+        _auditTimer = setTimeout(step, 320);
+      } else {
+        var sec = ((Date.now() - t0) / 1000).toFixed(1);
+        $('#audit-clock').textContent = '已完成 · 用时 ' + sec + ' 秒';
+        $('#audit-clock').className = 'tag green';
+        $('#audit-pct').textContent = D.auditSummary.total + ' / ' + D.auditSummary.total;
+        $('#audit-meter').style.width = '100%';
+        S.auditDone = true;
+        genDocs();
+        if (cb) setTimeout(cb, 200);
+      }
+    }
+    step();
+  }
+  window.QH_RUN_AUDIT = runAudit;
+
+  function genDocs() {
+    var items = $$('#doc-flow .doc-item');
+    items.forEach(function (d, i) {
+      setTimeout(function () {
+        d.className = 'doc-item gen';
+        var st = d.querySelector('.di-st');
+        st.className = 'di-st tag teal';
+        st.textContent = '✓ 已生成';
+      }, i * 190);
+    });
+  }
+
+  /* ============================================================
+   * 视图 04 · 溯源 · 碳足迹双认证
+   * ============================================================ */
+  function renderTrace() {
+    window.QRCode.render($('#qr'), 'https://trace.qianhuo.cn/verify?code=GEO-MY-0416&batch=DYMJ-2027-0425&carbon=0.46', { scale: 6, quiet: 2 });
+
+    $('#carbon-bars').innerHTML = D.carbon.parts.map(function (p) {
+      return '<div class="cmp-row" style="margin-bottom:6px"><div class="cmp-lab f10" style="flex:0 0 62px">' + p.k + '</div>' +
+        '<div class="cmp-track" style="height:14px"><div class="cmp-fill" style="width:' + p.pct + '%;background:linear-gradient(90deg,#2aa97b,#1a6b4f)"></div></div>' +
+        '<div class="cmp-val f10" style="flex:0 0 74px">' + p.v.toFixed(2) + ' kg</div></div>';
+    }).join('');
+
+    setTimeout(function () {
+      var C = 2 * Math.PI * 36;
+      $('#carbon-ring').style.strokeDashoffset = C * (1 - 0.72);
+    }, 300);
+  }
+
+  var _traceTimer = null;
+  function runTrace(cb) {
+    if (_traceTimer) clearTimeout(_traceTimer);
+    var tb = $('#trace-tbody'); tb.innerHTML = '';
+    var i = 0;
+    function step() {
+      if (i < D.traceChain.length) {
+        var t = D.traceChain[i];
+        var tr = h('tr', 'row-in');
+        tr.innerHTML = '<td class="f11 b8" style="color:var(--tea-800)">' + esc(t.step) + '</td>' +
+          '<td class="f11 dim">' + esc(t.detail) + '</td>' +
+          '<td class="f10 mono muted">' + esc(t.t) + '</td>' +
+          '<td class="f10 mono" style="color:var(--blue)">' + esc(t.hash) + '</td>' +
+          '<td class="f10 dim">' + esc(t.by) + '</td>';
+        tb.appendChild(tr);
+        var box = tb.closest('.panel-body');
+        if (box) box.scrollTop = box.scrollHeight;
+        i++;
+        $('#trace-count').textContent = i + ' / 7 节点已存证';
+        $('#trace-meter').style.width = (i / D.traceChain.length * 100) + '%';
+        _traceTimer = setTimeout(step, 340);
+      } else {
+        S.traceDone = true;
+        toast('全链路 7 个节点已上链存证，区块链核验通过', '⛓');
+        if (cb) setTimeout(cb, 320);
+      }
+    }
+    step();
+  }
+  window.QH_RUN_TRACE = runTrace;
+
+  /* ============================================================
+   * 视图 05 · 智能物流调度
+   * ============================================================ */
+  function renderLogistics() {
+    $('#warehouse-chain').innerHTML = [
+      { n: '产地揽收仓', d: '贵州·都匀', m: '直采 · 质检 · 赋码' },
+      { n: '广西边境仓', d: '凭祥 · 一级', m: '一仓辐射多国' },
+      { n: '马来西亚分拨仓', d: '吉隆坡 · 区域', m: '属地配送承接' }
+    ].map(function (w, i) {
+      return (i ? '<div class="tc f11" style="color:var(--tea-500);font-weight:800;line-height:1;margin:3px 0">↓</div>' : '') +
+        '<div class="flex aic gap10" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff">' +
+        '<div class="mono f10 b8" style="color:var(--tea-600);flex:0 0 20px">0' + (i + 1) + '</div>' +
+        '<div style="flex:1"><div class="f11 b8" style="color:var(--ink-900)">' + w.n + '</div>' +
+        '<div class="f10 muted">' + w.d + ' · ' + w.m + '</div></div></div>';
+    }).join('');
+
+    $('#loop-chips').innerHTML = ['预测', '调度', '排程优化', '跟踪', '应急'].map(function (c) {
+      return '<div class="sd-box tc" style="padding:6px 4px"><div class="f11 b7" style="color:var(--tea-800)">' + c + '</div></div>';
+    }).join('');
+
+    $('#ship-timeline').innerHTML = D.shipment.nodes.map(function (n) {
+      var cls = n.state === 'done' ? 'done' : (n.state === 'active' ? 'active' : '');
+      return '<div class="tl-item ' + cls + '">' +
+        '<div class="tl-time">' + n.t + '</div>' +
+        '<div class="tl-place">' + n.place + '</div>' +
+        '<div class="tl-act">' + n.act + '</div>' +
+        (n.temp !== '—' ? '<div class="tl-temp">🌡 ' + n.temp + '</div>' : '') +
+        '</div>';
+    }).join('');
+
+    $('#exception-list').innerHTML = [
+      { n: '滞港预警', d: '清关 > 72h 自动触发备用报关行' },
+      { n: '加急派送', d: '超时订单切换空运快线补货' },
+      { n: '区域仓备用', d: '超 72h 启动区域仓调拨发货' },
+      { n: '超温报警', d: '温湿度越界即时推送并干预' },
+      { n: '冷链干预', d: '绿茶储运温湿度阈值控制' },
+      { n: '跨境保险兜底', d: '货损与延误风险保险覆盖' }
+    ].map(function (e) {
+      return '<div style="padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:#fff;margin-bottom:6px">' +
+        '<div class="f11 b7" style="color:var(--ink-800)">⛨ ' + e.n + '</div>' +
+        '<div class="f10 muted" style="line-height:1.5">' + e.d + '</div></div>';
+    }).join('');
+  }
+
+  /* ============================================================
+   * 视图 06 · 八步履约闭环
+   * ============================================================ */
+  function renderFulfillment() {
+    var fs = $('#flow-steps'); fs.innerHTML = '';
+    D.fulfillmentSteps.forEach(function (s, i) {
+      var el = h('div', 'flow-step');
+      el.dataset.idx = i;
+      el.innerHTML = '<div class="bar"></div><div class="node">' + s.no + '</div>' +
+        '<div class="lbl">' + s.name + '</div><div class="dur">' + s.duration + '</div>';
+      el.addEventListener('click', function () { setFlow(i); });
+      fs.appendChild(el);
+    });
+
+    $('#data-loop').innerHTML = [
+      { t: '销售数据', d: '选品定价' },
+      { t: '物流数据', d: '路径调优' },
+      { t: '清关数据', d: '引擎迭代' },
+      { t: '售后数据', d: '品质改进' }
+    ].map(function (d) {
+      return '<div class="sd-box tc" style="padding:9px 6px"><div class="bt" style="letter-spacing:0">' + d.t + '</div><div class="f11 b7 down">→ ' + d.d + '</div></div>';
+    }).join('');
+  }
+
+  function setFlow(i, animate) {
+    S.flowIndex = i;
+    var steps = $$('#flow-steps .flow-step');
+    steps.forEach(function (el, k) {
+      el.classList.toggle('done', k < i);
+      el.classList.toggle('active', k === i);
+    });
+    var s = D.fulfillmentSteps[i];
+    if (!s) return;
+    var det = $('#step-detail');
+    det.innerHTML =
+      '<div class="sd-head"><span class="sd-no">' + s.no + '</span>' +
+      '<div><div class="sd-title">' + s.name + '<span class="sd-en" style="margin-left:8px">' + s.en + '</span></div>' +
+      '<span class="tag teal" style="font-size:9.5px">环节耗时 ' + s.duration + '</span></div></div>' +
+      '<p class="sd-desc">' + s.desc + '</p>' +
+      '<div class="sd-cols">' +
+      '<div class="sd-box"><div class="bt">输入</div><ul>' + s.inputs.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="sd-box"><div class="bt">输出</div><ul>' + s.outputs.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="sd-box"><div class="bt">承载系统</div><div class="sys">' + s.system + '</div></div>' +
+      '</div>';
+    if (animate) det.classList.add('row-in'), setTimeout(function () { det.classList.remove('row-in'); }, 400);
+  }
+  window.QH_SET_FLOW = setFlow;
+  window.QH_GET_FLOW = function () { return S.flowIndex; };
+
+  function playFlow(cb) {
+    if (S.flowTimer) clearInterval(S.flowTimer);
+    setFlow(0, true);
+    var i = 0;
+    S.flowTimer = setInterval(function () {
+      i++;
+      if (i >= D.fulfillmentSteps.length) {
+        clearInterval(S.flowTimer); S.flowTimer = null;
+        $$('#flow-steps .flow-step').forEach(function (el) { el.classList.add('done'); el.classList.remove('active'); });
+        toast('八步履约闭环演示完成 · 数据回流已形成正向循环', '⇄');
+        if (cb) cb();
+        return;
+      }
+      setFlow(i, true);
+    }, 1250);
+  }
+  window.QH_PLAY_FLOW = playFlow;
+
+  /* ============================================================
+   * 视图 07 · 物流选型与成本
+   * ============================================================ */
+  function renderDecision() {
+    /* 模式卡 */
+    $('#mode-cards').innerHTML = D.logisticsModes.map(function (m) {
+      return '<div class="mode-card' + (m.recommended ? ' rec' : '') + '">' +
+        (m.recommended ? '<div class="mc-flag">★ 推荐方案</div>' : '') +
+        '<div class="flex jcb aic"><div class="mc-name">' + m.name + '</div>' +
+        '<div class="mc-score">' + m.score.toFixed(2) + '<small> 分</small></div></div>' +
+        '<div class="mc-meta">' +
+        '<div>单件总成本<b>' + m.total + ' 元</b></div>' +
+        '<div>履约时效<b>' + m.leadTime + '</b></div>' +
+        '<div>适用阶段<b style="font-size:11px">' + m.phase.split('（')[0] + '</b></div>' +
+        '</div>' +
+        '<ul>' + m.pros.map(function (p) { return '<li class="pro">' + p + '</li>'; }).join('') +
+        m.cons.map(function (c) { return '<li class="con">' + c + '</li>'; }).join('') + '</ul>' +
+        '<div class="mt10 f10 muted" style="border-top:1px solid var(--line);padding-top:8px">适用条件：' + m.condition + '</div>' +
+        '</div>';
+    }).join('');
+
+    /* 评分表 */
+    var sc = D.logisticsScorecard;
+    var html = '<thead><tr><th>评价指标</th><th class="tr">权重</th><th class="tr">国际直邮</th><th class="tr">海外仓</th><th class="tr">边境仓</th></tr></thead><tbody>';
+    sc.rows.forEach(function (r) {
+      html += '<tr><td class="b7">' + r.k + '</td><td class="num dim">' + r.w + '%</td>' +
+        '<td class="num">' + r.direct + '</td><td class="num">' + r.overseas + '</td>' +
+        '<td class="num b8" style="color:var(--tea-700)">' + r.border + '</td></tr>';
+    });
+    html += '<tr class="total-row"><td>加权总分</td><td class="num">100%</td>' +
+      '<td class="num">68.25</td><td class="num">72.25</td>' +
+      '<td class="num" style="color:var(--tea-700)">77.25</td></tr></tbody>';
+    $('#score-tbl').innerHTML = html;
+
+    /* 总分条形 */
+    $('#score-bars').innerHTML = D.logisticsModes.map(function (m) {
+      var c = m.key === 'border' ? '#1f8a64' : (m.key === 'overseas' ? '#d98218' : '#93a1ad');
+      return '<div class="cmp-row"><div class="cmp-lab">' + m.name + (m.recommended ? ' ★' : '') + '</div>' +
+        '<div class="cmp-track" style="height:24px"><div class="cmp-fill" style="width:' + (m.score / 80 * 100) + '%;background:' + c + '">' + m.score.toFixed(2) + '</div></div>' +
+        '<div class="cmp-val">' + (m.recommended ? '<span class="down b7">最优</span>' : '<span class="muted">—</span>') + '</div></div>';
+    }).join('') +
+      '<div class="mt12 f10 muted" style="border-top:1px solid var(--line);padding-top:10px;line-height:1.7">边境仓综合得分最高（77.25），海外仓次之（72.25），国际直邮最低（68.25）。推荐「边境仓为主、海外仓为辅」的混合模式，按销量阶段动态切换。</div>';
+
+    /* 分阶段切换 */
+    $('#phase-switch').innerHTML = [
+      { p: '导入期', t: '0—6 个月', m: '国际直邮', c: '月销 < 500 单', cost: '83 元', lead: '10—20 天', d: '小批量多 SKU 快速测试市场反应，降低试错成本。', tone: 'slate' },
+      { p: '增长期', t: '6—18 个月', m: '边境仓', c: '月销 500—2000 单', cost: '69 元', lead: '5—10 天', d: '平衡成本与时效，支持销量快速爬坡，库存灵活调拨。', tone: 'teal' },
+      { p: '成熟期', t: '18 个月以上', m: '海外仓', c: '月销 > 2000 单', cost: '68 元', lead: '1—3 天', d: '本地发货实现极速达，提升用户体验与复购率。', tone: 'amber' }
+    ].map(function (x, i) {
+      return '<div style="padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;margin-bottom:9px;border-left:3px solid var(--' + (x.tone === 'teal' ? 'tea-500' : x.tone === 'amber' ? 'amber' : 'ink-300') + ')">' +
+        '<div class="flex aic gap8"><span class="f12 b8" style="color:var(--ink-900)">' + x.p + '</span>' +
+        '<span class="mono f10 muted">' + x.t + '</span>' +
+        '<span class="tag ' + x.tone + '" style="margin-left:auto;font-size:9.5px">' + x.m + '</span></div>' +
+        '<div class="flex gap14 mt6"><div class="f10 muted">适用条件 <b class="dim">' + x.c + '</b></div>' +
+        '<div class="f10 muted">单件成本 <b class="dim">' + x.cost + '</b></div>' +
+        '<div class="f10 muted">时效 <b class="dim">' + x.lead + '</b></div></div>' +
+        '<div class="f11 dim mt6" style="line-height:1.6">' + x.d + '</div></div>';
+    }).join('');
+
+    /* 模式成本对比表 */
+    var keys = Object.keys(D.logisticsModes[0].breakdown);
+    var t2 = '<thead><tr><th>成本项目</th><th class="tr">国际直邮</th><th class="tr">海外仓</th><th class="tr">边境仓</th></tr></thead><tbody>';
+    keys.forEach(function (k) {
+      t2 += '<tr><td class="b7">' + k + '</td>' +
+        D.logisticsModes.map(function (m) {
+          var v = m.breakdown[k], best = m.key === 'border' && (k === '跨境段运费' || k === '仓储费' || k === '清关费');
+          return '<td class="num' + (best ? ' down b7' : '') + '">' + v + ' 元</td>';
+        }).join('') + '</tr>';
+    });
+    t2 += '<tr class="total-row"><td>总成本</td>' +
+      D.logisticsModes.map(function (m) {
+        return '<td class="num"' + (m.key === 'border' ? ' style="color:var(--tea-700)"' : '') + '>' + m.total + ' 元</td>';
+      }).join('') + '</tr></tbody>';
+    $('#mode-cost-tbl').innerHTML = t2;
+
+    /* 成本堆叠条 */
+    var colors = ['#0d3b2e', '#1a6b4f', '#1f8a64', '#2aa97b', '#7fd4b3', '#2563b8'];
+    $('#cost-stack').innerHTML = D.unitCost.groups.map(function (g, i) {
+      return '<div class="cost-seg" style="flex:' + g.amount + ';background:' + colors[i] + '" title="' + g.name + ' ' + g.amount + ' 元">' +
+        (g.pct >= 10 ? g.pct + '%' : '') + '</div>';
+    }).join('');
+    $('#cost-legend').innerHTML = D.unitCost.groups.map(function (g, i) {
+      return '<div class="cost-leg"><i style="background:' + colors[i] + '"></i>' +
+        '<span class="cl-n">' + g.name + '</span><span class="cl-v">' + g.amount + ' 元</span></div>';
+    }).join('');
+    $('#cost-detail').innerHTML = D.unitCost.groups.map(function (g, i) {
+      return '<div class="sd-box"><div class="bt">' + g.name + ' · ' + g.amount + ' 元（' + g.pct + '%）</div>' +
+        '<div class="f11 dim" style="line-height:1.7">' + g.items.map(function (it) { return it[0] + ' <b class="mono dim">' + it[1] + '</b> 元'; }).join('　') + '</div></div>';
+    }).join('');
+  }
+
+  /* ============================================================
+   * 视图 08 · 商业与财务
+   * ============================================================ */
+  function renderBusiness() {
+    /* 投资回报 */
+    $('#invest-row').innerHTML = D.finance.investment.map(function (x, i) {
+      var tone = ['green', 'blue', 'red', 'amber'][i];
+      return '<div class="kpi ' + tone + '"><div class="kpi-val" style="font-size:21px">' + x.v + '</div>' +
+        '<div class="kpi-lab">' + x.k + '</div><div class="kpi-note">' + x.d + '</div></div>';
+    }).join('');
+
+    /* 财务柱状图 */
+    var maxRev = 2600;
+    $('#fin-chart').innerHTML = D.finance.years.map(function (y) {
+      var rh = y.revenue / maxRev * 100, ph = y.profit / maxRev * 100;
+      return '<div class="bar-col">' +
+        '<div class="bar-stack">' +
+        '<div class="bar-seg rev" style="height:' + rh + '%" data-h="' + rh + '">' + y.revenue + '</div>' +
+        '<div class="bar-seg pro" style="height:' + ph + '%" data-h="' + ph + '">' + y.profit + '</div>' +
+        '</div>' +
+        '<div class="bar-lab">' + y.y + '</div><div class="bar-sub">' + y.stage + '</div></div>';
+    }).join('');
+    setTimeout(function () {
+      $$('#fin-chart .bar-seg').forEach(function (s) { s.style.height = s.dataset.h + '%'; });
+    }, 240);
+
+    $('#fin-tbl').innerHTML = '<thead><tr><th>指标</th><th class="tr">第 1 年</th><th class="tr">第 2 年</th><th class="tr">第 3 年</th></tr></thead><tbody>' +
+      '<tr><td class="b7">销售收入（万元）</td>' + D.finance.years.map(function (y) { return '<td class="num b8" style="color:var(--blue)">' + y.revenue + '</td>'; }).join('') + '</tr>' +
+      '<tr><td class="b7">净利润（万元）</td>' + D.finance.years.map(function (y) { return '<td class="num b8 down">' + y.profit + '</td>'; }).join('') + '</tr>' +
+      '<tr><td class="b7">净利率</td>' + D.finance.years.map(function (y) { return '<td class="num">' + y.margin + '%</td>'; }).join('') + '</tr>' +
+      '<tr><td class="b7">市场范围</td>' + D.finance.years.map(function (y) { return '<td class="f10 dim">' + y.scope + '</td>'; }).join('') + '</tr>' +
+      '</tbody>';
+
+    /* 资金分配 */
+    var capColors = ['#0d3b2e', '#1a6b4f', '#1f8a64', '#2aa97b', '#7fd4b3'];
+    $('#capital-bars').innerHTML = D.finance.capital.map(function (c, i) {
+      return '<div class="cmp-row"><div class="cmp-lab">' + c.k + '</div>' +
+        '<div class="cmp-track"><div class="cmp-fill" style="width:' + (c.v / 30 * 100) + '%;background:' + capColors[i] + '">' + c.v + ' 万</div></div>' +
+        '<div class="cmp-val">' + (c.v / 100 * 100) + '%</div></div>' +
+        '<div class="f10 muted" style="margin:-5px 0 9px 120px">' + c.d + '</div>';
+    }).join('');
+
+    /* 战略支柱 */
+    $('#pillars2').innerHTML = D.pillars.map(function (p) {
+      var ic = { culture: '🏮', shield: '🛡', channel: '🌐', data: '📊' }[p.icon] || '◆';
+      return '<div class="pillar" style="padding:10px 6px"><div class="p-ico" style="font-size:17px">' + ic + '</div><div class="p-t f11">' + p.t + '</div></div>';
+    }).join('');
+
+    /* 渠道 */
+    $('#channel-list').innerHTML = D.channels.map(function (c) {
+      return '<div class="chan-row" style="padding:9px 14px">' +
+        '<span class="chan-type tag ' + c.tone + '" style="font-size:9.5px;width:auto;flex:0 0 auto">' + c.type + '</span>' +
+        '<div style="flex:1"><div class="f11 b8" style="color:var(--ink-900)">' + c.platform + '</div>' +
+        '<div class="f10 muted">' + c.strategy + '</div></div></div>';
+    }).join('');
+
+    /* 画布 */
+    $('#canvas-grid').innerHTML = D.canvas.map(function (c, i) {
+      return '<div class="sd-box"><div class="bt">0' + (i + 1) + ' ' + c.t + '</div><div class="f11 dim" style="line-height:1.7">' + c.d + '</div></div>';
+    }).join('');
+
+    /* 风险 */
+    $('#risk-grid').innerHTML = D.risks.map(function (r) {
+      return '<div class="risk-cell ' + r.levelKey + '">' +
+        '<div class="rc-n">' + r.name + '<span class="tag ' + (r.levelKey === 'high' ? 'red' : r.levelKey === 'midhigh' ? 'amber' : 'blue') + '" style="font-size:9px;margin-left:auto">' + r.level + '</span></div>' +
+        '<div class="rc-d">' + r.desc + '</div>' +
+        '<div class="rc-m"><span>概率 <b>' + r.prob + '</b></span><span>影响 <b>' + r.impact + '</b></span></div></div>';
+    }).join('');
+
+    /* 预警 */
+    $('#alert-grid').innerHTML = D.alertLevels.map(function (a) {
+      return '<div class="alert-card ' + a.tone + '">' +
+        '<div class="ac-head"><span class="f10 b8" style="color:var(--ink-500)">' + a.scope + '</span>' +
+        '<span class="ac-l" style="font-size:12px">' + a.level + '</span>' +
+        '<span class="ac-w">' + a.window + '</span></div>' +
+        '<ul>' + a.items.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul></div>';
+    }).join('');
+
+    /* 里程碑 */
+    $('#ms-list').innerHTML = D.milestones.map(function (m) {
+      return '<div class="ms-row"><div class="ms-no">' + m.no + '</div>' +
+        '<div class="ms-main"><div class="ms-head"><span class="ms-name">' + m.name + '</span>' +
+        '<span class="ms-time">' + m.time + '</span></div>' +
+        '<div class="ms-cols">' +
+        '<div><div class="mc-t">核心任务</div><ul style="margin:0;padding-left:15px">' + m.tasks.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></div>' +
+        '<div><div class="mc-t">关键交付成果</div><div style="display:flex;flex-wrap:wrap;gap:5px">' + m.delivers.map(function (d) { return '<span class="tag slate">' + d + '</span>'; }).join('') + '</div></div>' +
+        '</div></div></div>';
+    }).join('');
+  }
+
+  /* ============================================================
+   * KPI 数字动画触发
+   * ============================================================ */
+  function triggerKpi() {
+    $$('#kpi-row .kpi').forEach(function (c, i) {
+      var el = c.querySelector('.kv');
+      var k = D.kpis[i];
+      var dec = k.value % 1 !== 0 ? 1 : 0;
+      setTimeout(function () { animateNum(el, k.value, { dec: dec, dur: 1000 }); }, i * 130);
+    });
+  }
+  window.QH_KPI = triggerKpi;
+
+  /* ============================================================
+   * 视图切换
+   * ============================================================ */
+  function switchView(name, cb) {
+    S.view = name;
+    $$('.nav-item').forEach(function (n) { n.classList.toggle('active', n.dataset.view === name); });
+    $$('.view').forEach(function (v) { v.classList.toggle('active', v.id === 'view-' + name); });
+    var st = $('#stage'); if (st) st.scrollTop = 0;
+
+    if (name === 'dashboard') triggerKpi();
+    if (name === 'decision') animDecision();
+    if (name === 'business') animBusiness();
+    if (name === 'channel') animChannel();
+    if (cb) setTimeout(cb, 320);
+  }
+  window.QH_GOTO = switchView;
+
+  function animChannel() {
+    setTimeout(function () {
+      $$('#chan-flow .fs-node').forEach(function (n, i) {
+        n.style.opacity = '0';
+        n.style.transform = 'translateY(6px)';
+        setTimeout(function () {
+          n.style.transition = 'opacity .35s, transform .35s';
+          n.style.opacity = '1'; n.style.transform = 'translateY(0)';
+        }, i * 90);
+      });
+      $$('#gantt .g-bar').forEach(function (b, i) {
+        var w = b.style.width; b.style.width = '0%';
+        setTimeout(function () {
+          b.style.transition = 'width .6s cubic-bezier(.4,0,.2,1)';
+          b.style.width = w;
+        }, i * 45);
+      });
+      $$('#owner-bars .cmp-fill').forEach(function (f, i) {
+        var w = f.style.width; f.style.width = '0%';
+        setTimeout(function () { f.style.width = w; }, i * 80);
+      });
+    }, 60);
+  }
+
+  function animDecision() {
+    setTimeout(function () {
+      $$('#score-bars .cmp-fill').forEach(function (f, i) {
+        var w = f.style.width; f.style.width = '0%';
+        setTimeout(function () { f.style.width = w; }, i * 90);
+      });
+      $$('#cost-stack .cost-seg').forEach(function (s) { s.style.transition = 'flex .7s'; });
+    }, 60);
+  }
+  function animBusiness() {
+    setTimeout(function () {
+      $$('#fin-chart .bar-seg').forEach(function (s) { s.style.height = s.dataset.h + '%'; });
+      $$('#capital-bars .cmp-fill').forEach(function (f, i) {
+        var w = f.style.width; f.style.width = '0%';
+        setTimeout(function () { f.style.width = w; }, i * 80);
+      });
+    }, 80);
+  }
+
+  /* ============================================================
+   * 时钟
+   * ============================================================ */
+  function tickClock() {
+    var d = new Date();
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    $('#clock').textContent = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+
+  /* ============================================================
+   * 事件绑定
+   * ============================================================ */
+  function bind() {
+    $$('.nav-item').forEach(function (n) {
+      n.addEventListener('click', function () { switchView(n.dataset.view); });
+    });
+    $('#btn-audit').addEventListener('click', function () {
+      var b = this;
+      b.disabled = true;
+      b.innerHTML = '<span class="spin"></span> 引擎推理中…';
+      setTimeout(function () {
+        runAudit(function () {
+          b.disabled = false;
+          b.innerHTML = '↻ 重新预审';
+          toast('合规预审完成 · 42 项条款全部通过，1 项标签提示待复核', '🛡');
+        });
+      }, 280);
+    });
+    $('#btn-trace').addEventListener('click', function () {
+      var b = this;
+      b.disabled = true;
+      b.innerHTML = '<span class="spin"></span> 上链存证中…';
+      setTimeout(function () {
+        runTrace(function () {
+          b.disabled = false;
+          b.innerHTML = '↻ 重新演示上链';
+        });
+      }, 260);
+    });
+    $('#btn-flow-play').addEventListener('click', function () { playFlow(); });
+    $('#btn-flow-prev').addEventListener('click', function () {
+      var i = Math.max(0, S.flowIndex - 1); setFlow(i, true);
+    });
+    $('#btn-flow-next').addEventListener('click', function () {
+      var i = Math.min(D.fulfillmentSteps.length - 1, S.flowIndex + 1); setFlow(i, true);
+    });
+  }
+
+  /* ============================================================
+   * 09 渠道与实施作战台
+   * ============================================================ */
+  var PHASE_TONE = { '筹备期': '#7F77DD', '开发期': '#378ADD', '试运营期': '#EF9F27', '正式运营期': '#1D9E75' };
+  var PHASE_BG = { '筹备期': 'purple', '开发期': 'blue', '试运营期': 'amber', '正式运营期': 'teal' };
+
+  function monthDiff(a, b) {
+    var pa = a.split('-'), pb = b.split('-');
+    return (parseInt(pb[0], 10) - parseInt(pa[0], 10)) * 12 + (parseInt(pb[1], 10) - parseInt(pa[1], 10));
+  }
+
+  function renderChannel() {
+    var months = monthDiff('2026-09', '2027-12') + 1;
+
+    $('#chan-kpi-row').innerHTML = [
+      { t: '渠道层级', v: '一主两辅一基', s: '4 类渠道协同', tone: 'tea' },
+      { t: '实施周期', v: '16 个月', s: '2026.09 — 2027.12', tone: 'blue' },
+      { t: '关键任务', v: '16 项', s: '全部责任到岗', tone: 'violet' },
+      { t: '已完成成果', v: '6 项', s: '产业赛道实证', tone: 'up' }
+    ].map(function (k) {
+      return '<div class="kpi ' + k.tone + '">' +
+        '<div class="kpi-val"><span class="kv" style="font-size:20px">' + k.v + '</span></div>' +
+        '<div class="kpi-lab">' + k.t + '</div>' +
+        '<div class="kpi-note">' + k.s + '</div></div>';
+    }).join('');
+
+    $('#chan-cards').innerHTML = D.channels.map(function (c) {
+      return '<div class="sd-box" style="border-top:3px solid ' + (c.tone === 'red' ? '#d9384a' : c.tone === 'amber' ? '#EF9F27' : c.tone === 'blue' ? '#378ADD' : '#1a9c6b') + '">' +
+        '<div class="bt">' + c.type + '</div>' +
+        '<div class="b8 f13" style="color:var(--ink-900);margin:2px 0 4px">' + c.platform + '</div>' +
+        '<div class="f10 muted">定位：' + c.pos + '</div>' +
+        '<div class="f10 dim mt6" style="line-height:1.65">' + c.strategy + '</div></div>';
+    }).join('');
+
+    $('#chan-flow').innerHTML = [
+      { t: '内容平台种草', s: 'TikTok Shop', k: 'red' },
+      { t: '货架平台承接', s: 'Shopee / Lazada / 京东国际', k: 'blue' },
+      { t: '自有平台沉淀', s: '品牌独立站', k: 'green' }
+    ].map(function (n, i, arr) {
+      return '<div class="fs-node ' + n.k + '"><div class="fs-t">' + n.t + '</div><div class="fs-s">' + n.s + '</div></div>' +
+        (i < arr.length - 1 ? '<div class="fs-arrow">→</div>' : '');
+    }).join('');
+
+    $('#jd-grid').innerHTML = D.jdSynergy.map(function (j) {
+      return '<div class="alert-card ' + j.tone + '">' +
+        '<div class="ac-head"><span class="f10 b8" style="color:var(--ink-500)">' + j.layer + '</span>' +
+        '<span class="ac-l" style="font-size:11px">' + j.cap + '</span></div>' +
+        '<ul>' + j.items.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul></div>';
+    }).join('');
+
+    $('#synergy-box').innerHTML =
+      '<div class="sd-box"><div class="bt">协同逻辑</div><div class="f11 dim" style="line-height:1.75">内容平台种草 → 货架平台承接 → 自有平台沉淀，形成完整的流量转化与品牌沉淀链路。</div></div>' +
+      '<div class="grid g3 gap10 mt12">' +
+      ['一品多店', '一盘库存', '统一履约'].map(function (t) {
+        return '<div class="sd-box" style="text-align:center"><div class="f11 b8" style="color:var(--tea-700)">' + t + '</div></div>';
+      }).join('') + '</div>' +
+      '<div class="mt12 f10 muted" style="line-height:1.75">依据 2024 年 12 月《共建数智乡村振兴现代产业学院校企合作协议》，京东在合规、物流、商流与数据维度提供持续性支持，形成「企业命题 — 学校解题 — 产业落地」协同机制。</div>';
+
+    var axis = '';
+    for (var m = 0; m < months; m++) {
+      var y = 2026 + Math.floor((8 + m) / 12);
+      var mo = ((8 + m) % 12) + 1;
+      axis += '<div class="g-tick' + (mo === 1 || m === 0 ? ' g-tick-major' : '') + '">' +
+        (mo === 1 || m === 0 ? y + '<br>' + mo + '月' : mo) + '</div>';
+    }
+
+    var rows = D.taskBreakdown.map(function (t) {
+      var off = monthDiff('2026-09', t.start);
+      var len = monthDiff(t.start, t.end) + 1;
+      var left = (off / months) * 100;
+      var width = (len / months) * 100;
+      return '<div class="g-row">' +
+        '<div class="g-label" title="' + t.phase + ' · ' + t.task + '"><span class="g-ph" style="background:' + PHASE_TONE[t.phase] + '"></span>' + t.task + '</div>' +
+        '<div class="g-track"><div class="g-bar" style="left:' + left + '%;width:' + width + '%;background:' + PHASE_TONE[t.phase] + '">' + len + '个月</div></div>' +
+        '</div>';
+    }).join('');
+
+    $('#gantt').innerHTML = '<div class="g-axis"><div class="g-label"></div><div class="g-ticks">' + axis + '</div></div>' + rows;
+
+    $('#task-tbl').innerHTML =
+      '<thead><tr><th>阶段</th><th>关键任务</th><th>负责人</th><th>起止时间</th></tr></thead><tbody>' +
+      D.taskBreakdown.map(function (t) {
+        return '<tr><td><span class="tag ' + PHASE_BG[t.phase] + '" style="font-size:9.5px">' + t.phase + '</span></td>' +
+          '<td class="b8">' + t.task + '</td><td>' + t.owner + '</td>' +
+          '<td class="muted">' + t.start + ' → ' + t.end + '</td></tr>';
+      }).join('') + '</tbody>';
+
+    var cnt = {}, max = 0, order = [];
+    D.taskBreakdown.forEach(function (t) {
+      if (cnt[t.owner] === undefined) { cnt[t.owner] = 0; order.push(t.owner); }
+      cnt[t.owner]++; if (cnt[t.owner] > max) max = cnt[t.owner];
+    });
+    $('#owner-bars').innerHTML = order.map(function (o) {
+      var w = (cnt[o] / max) * 100;
+      return '<div class="cmp-row"><div class="cmp-lab">' + o + '</div>' +
+        '<div class="cmp-track"><div class="cmp-fill" style="width:' + w + '%;background:var(--tea-600)">' + cnt[o] + ' 项</div></div></div>';
+    }).join('');
+
+    $('#ach-grid').innerHTML = D.achievements.map(function (a) {
+      return '<div class="sd-box" style="border-left:3px solid var(--tea-600)">' +
+        '<div style="display:flex;align-items:center;gap:6px"><span class="f10 b8" style="color:var(--ink-400)">' + a.no + '</span>' +
+        '<span class="f11 b8" style="color:var(--ink-900);flex:1">' + a.name + '</span>' +
+        '<span class="tag teal" style="font-size:9px">' + a.status + '</span></div>' +
+        '<div class="f10 dim mt6" style="line-height:1.7">' + a.desc + '</div>' +
+        '<div class="f10 mt6" style="color:var(--tea-700)">✓ ' + a.proof + '</div></div>';
+    }).join('');
+  }
+
+  /* ============================================================
+   * 初始化
+   * ============================================================ */
+  /* ============================================================
+   * 发布版外链：演示视频 / 视频工作站
+   * 视频地址在 plan-data.js 的 meta.videoUrl 配置，留空则提示未配置
+   * ============================================================ */
+  function setupLinks() {
+    var v = $('#lnk-video'), s = $('#lnk-station');
+    var url = (D.meta && D.meta.videoUrl) ? String(D.meta.videoUrl).trim() : '';
+    if (v) {
+      if (url) {
+        v.href = url;
+        v.title = D.meta.videoName || '演示视频';
+      } else {
+        v.classList.add('is-off');
+        v.title = '尚未配置视频外链';
+        v.addEventListener('click', function (e) {
+          e.preventDefault();
+          toast('演示视频链接尚未配置 · 请联系项目负责人获取', '▶');
+        });
+      }
+    }
+    if (s && D.meta && D.meta.stationUrl) s.href = D.meta.stationUrl;
+  }
+
+  function init() {
+    setupLinks();
+    renderDashboard();
+    renderPain();
+    renderCompliance();
+    renderTrace();
+    renderLogistics();
+    renderFulfillment();
+    renderDecision();
+    renderBusiness();
+    renderChannel();
+    bind();
+    tickClock();
+    setInterval(tickClock, 1000);
+    setFlow(0);
+    triggerKpi();
+    window.QH_READY = true;
+  }
+
+  /* 全局演示接口（供自动化脚本调用） */
+  window.QH_DEMO = {
+    goDashboard: function () { switchView('dashboard', triggerKpi); },
+    goPain: function () { switchView('pain'); },
+    goCompliance: function () { switchView('compliance'); },
+    goTrace: function () { switchView('trace'); },
+    goLogistics: function () { switchView('logistics'); },
+    goFulfillment: function () { switchView('fulfillment'); },
+    goDecision: function () { switchView('decision'); },
+    goBusiness: function () { switchView('business'); },
+    goChannel: function () { switchView('channel', animChannel); },
+    audit: runAudit,
+    trace: runTrace,
+    playFlow: playFlow,
+    setFlow: setFlow
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+</script>
+</body>
+</html>
